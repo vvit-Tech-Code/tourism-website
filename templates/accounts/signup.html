@@ -1,0 +1,87 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block title %}Register | Bharat AI{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center py-20 px-4 relative overflow-hidden">
+    <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-700/5 rounded-full blur-[100px] pointer-events-none">
+    </div>
+    <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gold/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <div
+        class="max-w-md w-full space-y-8 bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white shadow-2xl animate-in fade-in slide-in-from-bottom-5">
+
+        <div class="text-center">
+            <div
+                class="w-20 h-20 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-emerald-100 transition-transform hover:scale-105">
+                <i class="fa-solid fa-user-plus text-3xl text-emerald-700"></i>
+            </div>
+            <h2 class="font-heading text-3xl font-bold text-emerald-900 tracking-tight">
+                Create <span class="text-emerald-600">Account</span>
+            </h2>
+            <p class="mt-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                Digital Identity Registration
+            </p>
+        </div>
+
+        <form class="mt-8 space-y-5" method="POST">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div class="relative group">
+                    <i
+                        class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors"></i>
+                    <input name="full_name" type="text" required placeholder="Full Name"
+                        class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-100 rounded-2xl focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 outline-none font-medium text-gray-800 transition-all">
+                </div>
+
+                <div class="relative group">
+                    <i
+                        class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors"></i>
+                    <input name="email" type="email" required placeholder="Email Address"
+                        class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-100 rounded-2xl focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 outline-none font-medium text-gray-800 transition-all">
+                </div>
+
+                <div class="relative group">
+                    <i
+                        class="fa-solid fa-shield-halved absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors"></i>
+                    <input name="password" type="password" required placeholder="Security Password"
+                        class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-100 rounded-2xl focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 outline-none font-medium text-gray-800 transition-all">
+                </div>
+
+                <div class="relative group">
+                    <i
+                        class="fa-solid fa-users-gear absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 z-10"></i>
+                    <select name="role" required
+                        class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-100 rounded-2xl focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 outline-none font-medium text-gray-800 appearance-none cursor-pointer transition-all">
+                        <option value="" disabled selected>Choose Account Type</option>
+                        <option value="tourist">Tourist (End User)</option>
+                        <option value="admin">Administrator (Authority)</option>
+                    </select>
+                    <i
+                        class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                </div>
+            </div>
+
+            <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100 flex items-start gap-4">
+                <i class="fa-solid fa-envelope-circle-check text-emerald-600 mt-1"></i>
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
+                    An activation link will be dispatched to your email to verify your identity.
+                </p>
+            </div>
+
+            <button type="submit"
+                class="btn-glow w-full py-4 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 active:scale-95 transition-all shadow-lg">
+                <i class="fa-solid fa-rocket"></i> Register Profile
+            </button>
+
+            <div class="text-center pt-2">
+                <p class="text-xs text-gray-400 font-medium">
+                    Already part of the network?
+                    <a href="{% url 'login' %}" class="text-emerald-700 font-bold hover:underline ms-1">Login here</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

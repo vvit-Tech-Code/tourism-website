@@ -1,0 +1,27 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block title %}Verification Successful | Bharat AI{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center py-24 px-4">
+    <div class="max-w-md w-full bg-white p-12 rounded-[40px] border border-emerald-100 shadow-2xl text-center relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-50 rounded-full blur-3xl"></div>
+        
+        <div class="relative z-10">
+            <div class="w-24 h-24 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl shadow-emerald-200 animate-bounce">
+                <i class="fa-solid fa-check text-4xl"></i>
+            </div>
+            
+            <h2 class="font-heading text-3xl font-bold text-emerald-900 mb-4">Identity Verified</h2>
+            <p class="text-gray-500 text-sm leading-relaxed mb-10">
+                Your account has been successfully activated. You now have full access to <strong>Bharat AI</strong> smart tourism tools and verified services.
+            </p>
+
+            <a href="{% url 'login' %}" class="btn-glow inline-block w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs">
+                Proceed to Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

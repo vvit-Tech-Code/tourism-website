@@ -1,0 +1,82 @@
+{% extends 'base2.html' %}
+{% block header_title %}Register New Destination{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-8 flex items-center justify-between px-4">
+        <div>
+            <h3 class="text-2xl font-bold text-emerald-900">Governance Portal</h3>
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">Add Verified Tourist Data</p>
+        </div>
+        <div class="bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100">
+            <span class="text-[10px] font-black text-emerald-800 uppercase tracking-widest"><i class="fas fa-shield-check mr-2"></i> Authority Verified</span>
+        </div>
+    </div>
+
+    <div class="card-stat p-10 bg-white shadow-2xl border border-emerald-50">
+        <form method="POST" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl mb-6">
+                    <p class="text-sm text-red-700 font-bold">Please correct the following errors:</p>
+                    <ul class="text-xs text-red-600 mt-2 list-disc list-inside">
+                        {% for field, errors in form.errors.items %}
+                            <li>{{ field|title }}: {{ errors|striptags }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Destination Name</label>
+                    {{ form.name }}
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Category</label>
+                    {{ form.category }}
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Historical/Eco Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Cultural Significance</label>
+                {{ form.history }}
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Latitude</label>
+                    {{ form.latitude }}
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Longitude</label>
+                    {{ form.longitude }}
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Best Time</label>
+                    {{ form.best_time }}
+                </div>
+            </div>
+
+            <div class="p-8 bg-emerald-50/50 rounded-[32px] border border-dashed border-emerald-200 text-center">
+                <i class="fas fa-cloud-upload-alt text-3xl text-emerald-700 mb-4"></i>
+                <label class="text-sm font-bold text-emerald-900 block mb-2">Upload Display Image</label>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mb-4">Recommended Size: 1920x1080px</p>
+                <div class="flex justify-center">
+                    {{ form.image }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn-glow w-full py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:scale-[1.01] transition-all">
+                Finalize Database Registration
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

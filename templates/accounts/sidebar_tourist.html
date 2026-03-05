@@ -1,0 +1,54 @@
+<p class="sidebar-label text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 px-4">Explorer Menu</p>
+
+<a href="{% url 'user_dashboard' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'user_dashboard' %}active{% endif %}">
+    <i class="fas fa-th-large text-lg"></i>
+    <span class="sidebar-label">My Dashboard</span>
+</a>
+
+<a href="{% url 'destinations_public' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'destinations_public' %}active{% endif %}">
+    <i class="fas fa-compass text-lg"></i>
+    <span class="sidebar-label">Explore Places</span>
+</a>
+
+<a href="{% url 'map_view' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'map_view' %}active{% endif %}">
+    <i class="fas fa-map-marked-alt text-lg"></i>
+    <span class="sidebar-label">Explore Map</span>
+</a>
+
+<a href="{% url 'trip_planner' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'trip_planner' %}active{% endif %}">
+    <i class="fas fa-wand-magic-sparkles text-lg"></i>
+    <span class="sidebar-label">AI Trip Planner</span>
+</a>
+
+<a href="{% url 'trip_history' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'trip_history' %}active{% endif %}">
+    <i class="fas fa-history text-lg"></i>
+    <span class="sidebar-label">Saved Journeys</span>
+</a>
+
+<a href="{% url 'ai_assistant' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'ai_assistant' %}active{% endif %}">
+    <i class="fas fa-robot text-lg"></i>
+    <span class="sidebar-label">Travel Assistant</span>
+</a>
+
+<div class="mt-8 pt-8 border-t border-gray-50">
+    <p class="sidebar-label text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 px-4">Personal Area</p>
+    
+    <a href="{% url 'notifications_list' %}" 
+       class="nav-item px-4 py-3 text-sm font-bold flex justify-between items-center {% if request.resolver_match.url_name == 'notifications_list' %}active{% endif %}">
+        <div class="flex items-center gap-4">
+            <i class="fas fa-bell text-lg"></i>
+            <span class="sidebar-label">Notifications</span>
+        </div>
+        {% if unread_notifications_count > 0 %}
+        <span class="sidebar-label bg-emerald-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full animate-pulse">
+            {{ unread_notifications_count }}
+        </span>
+        {% endif %}
+    </a>
+</div>

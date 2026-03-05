@@ -1,0 +1,38 @@
+{% extends 'base2.html' %}
+{% block header_title %}Trip History{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-10">
+        <h2 class="text-3xl font-black text-emerald-900 uppercase tracking-tighter">Saved Journeys</h2>
+        <a href="{% url 'trip_planner' %}" class="btn-glow px-6 py-2 rounded-xl text-[10px] font-bold uppercase">Plan New Trip</a>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for plan in plans %}
+        <div class="card-stat p-8 bg-white border border-emerald-50 rounded-[40px] hover:shadow-2xl transition-all group">
+            <div class="flex justify-between items-start mb-6">
+                <div class="bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
+                    {{ plan.interests }}
+                </div>
+                <span class="text-[10px] text-gray-400 font-bold italic">{{ plan.created_at|date:"d M Y" }}</span>
+            </div>
+            
+            <h3 class="text-2xl font-bold text-emerald-900 mb-3 group-hover:text-emerald-600 transition-colors">{{ plan.title }}</h3>
+            <p class="text-xs text-gray-500 font-medium leading-relaxed mb-8">{{ plan.days }} Days of AI-curated discovery.</p>
+                <div class="pt-6 border-t border-gray-50 flex items-center justify-between">
+                    <span class="text-[10px] font-black text-emerald-800 uppercase">View Full Itinerary</span>
+                    <a href="{% url 'trip_detail' plan.id %}" class="w-10 h-10 bg-emerald-900 text-white rounded-2xl flex items-center justify-center transform group-hover:translate-x-2 transition-transform">
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </a>
+                </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-32 text-center bg-white rounded-[40px] border border-dashed border-gray-200">
+            <i class="fas fa-route text-5xl text-gray-100 mb-6"></i>
+            <p class="text-gray-400 font-bold uppercase text-xs tracking-[0.3em]">No saved plans found yet</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

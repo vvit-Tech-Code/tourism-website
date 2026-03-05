@@ -1,0 +1,127 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}Interactive Map | Bharat AI{% endblock %}
+{% block header_title %}Geospatial Exploration{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #map { height: 650px; width: 100%; border-radius: 32px; z-index: 1; border: 4px solid white; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+    .custom-popup { padding: 5px; min-width: 150px; }
+    .custom-popup h4 { color: #2E7D32; font-weight: 800; margin-bottom: 2px; font-size: 14px; }
+    .custom-popup .dist-tag { color: #d97706; font-weight: 700; font-size: 11px; margin-bottom: 8px; display: block; }
+    .custom-popup a { background: #2E7D32; color: white; padding: 6px 15px; border-radius: 8px; font-size: 10px; text-transform: uppercase; font-weight: bold; text-decoration: none; display: block; text-align: center; margin-top: 5px; transition: 0.3s; }
+    .custom-popup a:hover { background: #1b5e20; }
+    
+    /* Pulse effect for the user location */
+    .user-pulse { border-radius: 50%; background: #2E7D32; box-shadow: 0 0 0 rgba(46, 125, 50, 0.4); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(46, 125, 50, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="mb-8 flex justify-between items-end">
+        <div>
+            <h3 class="text-2xl font-bold text-emerald-900">Live Jharkhand Discovery</h3>
+            <p class="text-sm text-gray-400 font-medium">Auto-synced with Bharat AI database. All pins are live.</p>
+        </div>
+        <div id="distance-info" class="hidden bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 flex items-center gap-2">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span class="text-[10px] font-black text-emerald-800 uppercase tracking-widest">GPS Tracking Active</span>
+        </div>
+    </div>
+
+    <div id="map"></div>
+</div>
+
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Initialize map centered on Jharkhand (Ranchi)
+    // Zoom level 7 shows the whole state including popular/hidden spots
+    var map = L.map('map').setView([23.3441, 85.3091], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; Bharat AI | Tourism Intelligence'
+    }).addTo(map);
+
+    // This variable pulls EVERY place from the database dynamically
+    var places = {{ places_json|safe }};
+    var userLatLng = null;
+    var markers = [];
+
+    // Icon logic for different categories
+    var ecoIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+    });
+
+    var cultureIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+    });
+
+    // 1. Loop through all places (Newly added + Popular)
+    places.forEach(function(place) {
+        // Choose icon based on category
+        var customIcon = (place.category === 'Eco-Tourism') ? ecoIcon : cultureIcon;
+        
+        var marker = L.marker([place.lat, place.lng], {icon: customIcon}).addTo(map);
+        marker.placeData = place; 
+        
+        var initialPopup = `
+            <div class="custom-popup">
+                <h4>${place.name}</h4>
+                <p style="font-size: 10px; color: #666; font-weight: bold;">${place.category}</p>
+                <div id="dist-${place.name.replace(/\s+/g, '')}" class="text-[9px] text-gray-400">Calculating distance...</div>
+                <a href="${place.url}">View Details</a>
+            </div>
+        `;
+        marker.bindPopup(initialPopup);
+        markers.push(marker);
+    });
+
+    // 2. Geolocation Logic (Auto-Detect User)
+    map.locate({setView: false, maxZoom: 10, watch: true});
+
+    map.on('locationfound', function(e) {
+        userLatLng = e.latlng;
+        document.getElementById('distance-info').classList.remove('hidden');
+
+        // Update/Add user marker with pulse effect
+        if (window.userMarker) {
+            window.userMarker.setLatLng(e.latlng);
+        } else {
+            window.userMarker = L.circleMarker(e.latlng, {
+                radius: 8, color: 'white', fillColor: '#2E7D32', fillOpacity: 1, weight: 3, className: 'user-pulse'
+            }).addTo(map).bindPopup("<b>Your Current Location</b>");
+        }
+
+        // 3. Update all destination popups with LIVE distance
+        markers.forEach(function(marker) {
+            var dist = userLatLng.distanceTo(marker.getLatLng()) / 1000; // Meters to KM
+            var updatedPopup = `
+                <div class="custom-popup">
+                    <h4 class="flex justify-between">${marker.placeData.name}</h4>
+                    <span class="dist-tag"><i class="fas fa-location-arrow mr-1"></i> ${dist.toFixed(1)} KM away</span>
+                    <p style="font-size: 9px; color: #999; margin-bottom: 5px;">${marker.placeData.category}</p>
+                    <a href="${marker.placeData.url}">View Details</a>
+                </div>
+            `;
+            marker.setPopupContent(updatedPopup);
+        });
+    });
+
+    map.on('locationerror', function() {
+        console.log("GPS Access Denied. Showing all Jharkhand destinations without distance labels.");
+    });
+</script>
+{% endblock %}

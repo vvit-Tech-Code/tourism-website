@@ -1,0 +1,99 @@
+{% extends 'base2.html' %}
+{% block header_title %}AI Travel Assistant{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto h-[70vh] flex flex-col bg-white rounded-[40px] shadow-2xl border border-emerald-50 overflow-hidden">
+    <div class="bg-emerald-800 p-6 text-white flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                <i class="fas fa-robot text-xl"></i>
+            </div>
+            <div>
+                <h4 class="font-bold tracking-tight">Bharat AI Assistant</h4>
+                <p class="text-[10px] font-black uppercase tracking-widest opacity-60">Smart Guide • Online</p>
+            </div>
+        </div>
+        <i class="fas fa-circle text-emerald-400 text-[8px] animate-pulse"></i>
+    </div>
+
+    <div id="chat-container" class="flex-1 overflow-y-auto p-8 space-y-6 bg-gray-50/50">
+        <div class="flex gap-4 max-w-[80%]">
+            <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700 flex-shrink-0">
+                <i class="fas fa-robot text-xs"></i>
+            </div>
+            <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-emerald-50">
+                <p class="text-sm text-gray-700 font-medium">Namaste! I am Bharat AI. I can help you find destinations, plan trips, or answer safety queries. How can I help?</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6 bg-white border-t border-gray-100">
+        <div class="flex gap-4 items-center bg-gray-50 p-2 rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-all">
+            <input type="text" id="user-input" placeholder="Ask about places, safety, or planning..." 
+                class="flex-1 bg-transparent border-none outline-none px-4 py-2 text-sm font-medium text-emerald-900">
+            <button onclick="sendMessage()" class="bg-emerald-800 text-white w-12 h-12 rounded-xl flex items-center justify-center hover:bg-emerald-700 transition shadow-lg">
+                <i class="fas fa-paper-plane text-sm"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const chatContainer = document.getElementById('chat-container');
+    const userInput = document.getElementById('user-input');
+
+    userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+
+    async function sendMessage() {
+        const msg = userInput.value.trim();
+        if (!msg) return;
+
+        appendMessage('user', msg);
+        userInput.value = '';
+
+        const loadingId = 'loading-' + Date.now();
+        appendLoading(loadingId);
+
+        try {
+            const response = await fetch("{% url 'chatbot_query' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ msg: msg })
+            });
+            const data = await response.json();
+            document.getElementById(loadingId).remove();
+            appendMessage('bot', data.reply);
+        } catch (error) {
+            document.getElementById(loadingId).innerHTML = "Service Unavailable.";
+        }
+    }
+
+    function appendMessage(sender, text) {
+        const div = document.createElement('div');
+        div.className = sender === 'user' ? 'flex gap-4 max-w-[80%] ml-auto flex-row-reverse' : 'flex gap-4 max-w-[80%]';
+        const avatarClass = sender === 'user' ? 'bg-gold/20 text-emerald-900' : 'bg-emerald-100 text-emerald-700';
+        const icon = sender === 'user' ? 'fa-user' : 'fa-robot';
+        const bubbleClass = sender === 'user' ? 'bg-emerald-800 text-white rounded-tr-none' : 'bg-white text-gray-700 rounded-tl-none border border-emerald-50';
+
+        div.innerHTML = `
+            <div class="w-8 h-8 ${avatarClass} rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas ${icon} text-xs"></i>
+            </div>
+            <div class="${bubbleClass} p-4 rounded-2xl shadow-sm">
+                <p class="text-sm font-medium">${text}</p>
+            </div>
+        `;
+        chatContainer.appendChild(div);
+        chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
+    }
+
+    function appendLoading(id) {
+        const div = document.createElement('div');
+        div.id = id;
+        div.className = 'flex gap-2 p-4 text-emerald-300 animate-pulse';
+        div.innerHTML = '<i class="fas fa-circle text-[6px]"></i><i class="fas fa-circle text-[6px]"></i><i class="fas fa-circle text-[6px]"></i>';
+        chatContainer.appendChild(div);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base2.html' %}
+{% block header_title %}Service Integration{% endblock %}
+
+{% block content %}
+<div class="grid lg:grid-cols-3 gap-10 max-w-7xl mx-auto pb-20">
+    <div class="lg:col-span-1">
+        <div class="card-stat p-8 bg-white sticky top-24 rounded-[32px] shadow-xl border border-emerald-50">
+            <h4 class="font-bold text-emerald-900 mb-2 text-xl tracking-tighter">Register Provider</h4>
+            <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-8">Manual Service Attachment</p>
+            
+            <form method="POST" class="space-y-5">
+                {% csrf_token %}
+                
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Service Category</label>
+                    <select name="service_type" class="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900 appearance-none">
+                        <option value="guide">Professional Guide</option>
+                        <option value="homestay">Verified Homestay</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Provider Name</label>
+                    <input type="text" name="name" required placeholder="e.g. Arshad Khan"
+                           class="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Contact (Phone/Email)</label>
+                    <input type="text" name="contact" required placeholder="+91 XXXXX XXXXX"
+                           class="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Attach to Location</label>
+                    <select name="destination" class="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900 appearance-none">
+                        {% for dest in destinations %}
+                            <option value="{{ dest.id }}">{{ dest.name }} ({{ dest.state }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-900 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-emerald-800 transition shadow-lg mt-4">
+                    Confirm Attachment
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="lg:col-span-2">
+        <div class="card-stat p-10 bg-white min-h-[600px] rounded-[40px] shadow-xl border border-emerald-50">
+            <h4 class="font-bold text-emerald-900 mb-8 text-2xl tracking-tighter">Active Service Network</h4>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="border-b border-gray-100">
+                        <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            <th class="pb-6">Provider Details</th>
+                            <th class="pb-6">Infrastructure Node</th>
+                            <th class="pb-6">Type</th>
+                            <th class="pb-6 text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        {% for guide in guides %}
+                        <tr class="hover:bg-emerald-50/30 transition-all">
+                            <td class="py-6">
+                                <p class="text-sm font-bold text-emerald-900">{{ guide.name }}</p>
+                                <p class="text-[10px] text-gray-400 font-medium">{{ guide.phone }}</p>
+                            </td>
+                            <td class="py-6 text-xs font-bold text-gray-600">{{ guide.destination.name }}</td>
+                            <td class="py-6">
+                                <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[8px] font-black rounded-lg">GUIDE</span>
+                            </td>
+                            <td class="py-6 text-right">
+                                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[9px] font-black rounded-full">VERIFIED</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                        {% for home in homestays %}
+                        <tr class="hover:bg-blue-50/30 transition-all">
+                            <td class="py-6">
+                                <p class="text-sm font-bold text-emerald-900">{{ home.name }}</p>
+                                <p class="text-[10px] text-gray-400 font-medium">{{ home.contact }}</p>
+                            </td>
+                            <td class="py-6 text-xs font-bold text-gray-600">{{ home.destination.name }}</td>
+                            <td class="py-6">
+                                <span class="px-2 py-1 bg-blue-50 text-blue-600 text-[8px] font-black rounded-lg">HOMESTAY</span>
+                            </td>
+                            <td class="py-6 text-right">
+                                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[9px] font-black rounded-full">VERIFIED</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

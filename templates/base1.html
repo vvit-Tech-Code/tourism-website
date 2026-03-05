@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bharat AI | Smart Tourism Platform{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --emerald: #2E7D32;
+            --gold: #FFD700;
+            --sky-wash: #F0F8FF;
+            --charcoal: #333333;
+            --cyan-glow: rgba(0, 229, 255, 0.4);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--sky-wash);
+            color: var(--charcoal);
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, .font-heading { font-family: 'Montserrat', sans-serif; }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(46, 125, 50, 0.1);
+        }
+
+        .btn-glow {
+            background: var(--emerald);
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+            border: none;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 20px var(--cyan-glow);
+            transform: translateY(-2px);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after { width: 100%; }
+
+        .ticker-wrap {
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            padding: 10px 0;
+        }
+
+        .ticker-move {
+            display: flex;
+            width: max-content;
+            animation: tickerFlow 40s linear infinite;
+        }
+
+        @keyframes tickerFlow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .ticker-item {
+            padding: 0 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--emerald);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <nav class="glass-nav sticky top-0 z-50 px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="bg-emerald-800 p-2 rounded-xl shadow-inner">
+                <i class="fas fa-map-location-dot text-white text-xl"></i>
+            </div>
+            <a href="{% url 'home' %}" class="font-heading text-2xl font-extrabold tracking-tighter text-emerald-900">
+                BHARAT<span class="text-emerald-600">AI</span>
+            </a>
+        </div>
+
+        <div class="hidden md:flex gap-10 items-center">
+            <a href="{% url 'home' %}" class="nav-link text-gray-700 font-medium text-sm">Home</a>
+            <a href="{% url 'destinations_public' %}" class="nav-link text-gray-700 font-medium text-sm">Explore</a>
+            
+            {% if user.is_authenticated %}
+                <a href="{% if user.role == 'admin' %}{% url 'admin_dashboard' %}{% else %}{% url 'user_dashboard' %}{% endif %}" class="btn-glow px-8 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest">Dashboard</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="text-emerald-800 font-bold text-sm hover:text-emerald-600">Login</a>
+                <a href="{% url 'signup' %}" class="btn-glow px-8 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white border-t mt-20 py-16 px-8">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <h3 class="font-heading text-xl font-bold text-emerald-900 mb-4">Bharat AI Smart Tourism</h3>
+                <p class="text-gray-500 text-sm leading-relaxed max-w-sm">
+                    A centralized digital governance platform designed to empower local communities and enhance tourist experiences through verified services and AI-driven insights.
+                </p>
+            </div>
+            <div>
+                <h4 class="font-bold text-sm mb-4 uppercase tracking-widest text-emerald-800">Quick Links</h4>
+                <ul class="space-y-3 text-gray-600 text-sm">
+                    <li><a href="{% url 'destinations_public' %}" class="hover:text-emerald-600">Explore Map</a></li>
+                    <li><a href="{% url 'about_vision' %}" class="hover:text-emerald-600">Project Vision</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-sm mb-4 uppercase tracking-widest text-emerald-800">Account</h4>
+                <ul class="space-y-3 text-gray-600 text-sm">
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'profile_settings' %}" class="hover:text-emerald-600">Settings</a></li>
+                    <li><a href="{% url 'logout' %}" class="hover:text-emerald-600 text-red-500">Logout</a></li>
+                    {% else %}
+                    <li><a href="{% url 'login' %}" class="hover:text-emerald-600">Login</a></li>
+                    <li><a href="{% url 'signup' %}" class="hover:text-emerald-600">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto text-center mt-16 pt-8 border-t border-gray-100 text-gray-400 text-xs tracking-widest">
+            &copy; 2026 BHARAT AI TOURISM PLATFORM | ACADEMIC IMPLEMENTATION
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

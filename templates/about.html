@@ -1,0 +1,76 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block title %}Project Vision | Bharat AI{% endblock %}
+
+{% block content %}
+<section class="py-20 px-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-20">
+            <h1 class="text-4xl lg:text-5xl font-extrabold text-emerald-900 mb-6">Our Vision for Smart Tourism</h1>
+            <p class="text-gray-500 text-lg leading-relaxed font-medium">Bharat AI is a centralized digital governance platform bridging the gap between historical heritage and modern technology.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12 mb-24">
+            <div class="p-10 bg-white rounded-[40px] shadow-sm border border-gray-100">
+                <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 mb-6 text-xl">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 class="text-xl font-bold text-emerald-900 mb-4">The Challenge</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Traditional tourism lacks verified digital infrastructure, leading to fragmented information, unvetted service providers, and missed opportunities for local tribal and eco-tourism communities.</p>
+            </div>
+            <div class="p-10 bg-emerald-900 rounded-[40px] shadow-xl text-white">
+                <div class="w-12 h-12 bg-emerald-800 rounded-2xl flex items-center justify-center text-emerald-400 mb-6 text-xl">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4">The Bharat AI Solution</h3>
+                <p class="text-emerald-100 text-sm leading-relaxed">An AI-powered ecosystem that utilizes machine learning for sentiment analysis, provides verified connections to local guides, and optimizes travel planning via intelligent algorithms.</p>
+            </div>
+        </div>
+
+        <div class="space-y-16">
+            <h2 class="text-3xl font-bold text-emerald-900 text-center">Technical Core</h2>
+            
+            <div class="flex flex-col md:flex-row gap-12 items-center">
+                <div class="md:w-1/2">
+                    <h3 class="text-2xl font-bold text-emerald-800 mb-4">Sentiment Intelligence</h3>
+                    <p class="text-gray-500 leading-relaxed mb-6">Using Python-based Natural Language Processing (NLP), our system analyzes user reviews to calculate sentiment scores. This ensures that only high-quality destinations and guides remain visible on the platform.</p>
+                    <div class="flex gap-4">
+                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-[10px] font-bold text-gray-500 uppercase tracking-widest">NLTK</span>
+                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-[10px] font-bold text-gray-500 uppercase tracking-widest">Scikit-Learn</span>
+                    </div>
+                </div>
+                <div class="md:w-1/2 bg-white p-8 rounded-[32px] shadow-inner border border-gray-50">
+                    <div class="space-y-4">
+                        <div class="h-3 w-full bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 w-[85%]"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-black uppercase text-emerald-800 tracking-tighter">
+                            <span>Positive Sentiment</span>
+                            <span>85%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-gray-100">
+
+            <div class="flex flex-col md:flex-row-reverse gap-12 items-center">
+                <div class="md:w-1/2">
+                    <h3 class="text-2xl font-bold text-emerald-800 mb-4">Verified Governance</h3>
+                    <p class="text-gray-500 leading-relaxed mb-6">We eliminate data unreliability through an Admin-curated model. Every guide and homestay listing is manually verified by tourism authorities before becoming visible to tourists.</p>
+                    <div class="flex gap-4">
+                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-[10px] font-bold text-gray-500 uppercase tracking-widest">Admin Control</span>
+                        <span class="px-3 py-1 bg-gray-100 rounded-lg text-[10px] font-bold text-gray-500 uppercase tracking-widest">RBAC Architecture</span>
+                    </div>
+                </div>
+                <div class="md:w-1/2 text-center">
+                    <div class="inline-block p-10 bg-emerald-50 rounded-full text-emerald-700 text-5xl">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

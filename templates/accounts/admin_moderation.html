@@ -1,0 +1,93 @@
+{% extends 'base2.html' %}
+{% block header_title %}Content Moderation{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto pb-20">
+    <div class="mb-12 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div>
+            <h3 class="text-3xl font-black text-emerald-900 tracking-tighter uppercase">Review Audit Log</h3>
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Platform-wide Sentiment Governance</p>
+        </div>
+        <div class="flex gap-4">
+            <div class="bg-white px-8 py-4 rounded-[24px] shadow-sm border border-emerald-50">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Total Audit Volume</p>
+                <p class="text-2xl font-black text-emerald-900">{{ reviews.count }} <span class="text-xs text-emerald-500 font-bold">Reviews</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-stat bg-white overflow-hidden rounded-[40px] shadow-xl border border-emerald-50">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50/50 border-b border-gray-100">
+                    <tr class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                        <th class="px-8 py-6">Tourist Identity</th>
+                        <th class="px-8 py-6">Target Location</th>
+                        <th class="px-8 py-6">AI Classification</th>
+                        <th class="px-8 py-6">Feedback Content</th>
+                        <th class="px-8 py-6 text-right">Moderation</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 text-sm">
+                    {% for review in reviews %}
+                    <tr class="hover:bg-emerald-50/30 transition-all group">
+                        <td class="px-8 py-6">
+                            <p class="font-bold text-emerald-900">{{ review.user.email }}</p>
+                            <p class="text-[10px] text-gray-400 font-black uppercase tracking-tighter mt-1">
+                                <i class="far fa-clock mr-1"></i> {{ review.created_at|date:"d M Y" }}
+                            </p>
+                        </td>
+
+                        <td class="px-8 py-6">
+                            <span class="font-bold text-gray-700">{{ review.destination.name }}</span>
+                        </td>
+
+                        <td class="px-8 py-6">
+                            <div class="flex flex-col gap-1">
+                                {% if review.sentiment == 'POSITIVE' %}
+                                    <span class="inline-flex items-center w-fit px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-[10px] font-black">
+                                        <i class="fas fa-smile-beam mr-2"></i> POSITIVE
+                                    </span>
+                                {% elif review.sentiment == 'NEGATIVE' %}
+                                    <span class="inline-flex items-center w-fit px-3 py-1 bg-red-100 text-red-700 rounded-lg text-[10px] font-black">
+                                        <i class="fas fa-frown-open mr-2"></i> NEGATIVE
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center w-fit px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-black">
+                                        <i class="fas fa-meh mr-2"></i> NEUTRAL
+                                    </span>
+                                {% endif %}
+                                <p class="text-[9px] font-bold text-gray-300 uppercase italic">Score: {{ review.sentiment_score }}</p>
+                            </div>
+                        </td>
+
+                        <td class="px-8 py-6">
+                            <p class="text-xs text-gray-500 max-w-xs leading-relaxed italic" title="{{ review.comment }}">
+                                "{{ review.comment|truncatechars:80 }}"
+                            </p>
+                        </td>
+
+                        <td class="px-8 py-6 text-right">
+                            <form action="{% url 'delete_review' review.id %}" method="POST" 
+                                  onsubmit="return confirm('WARNING: Moderate this content? This action is permanent and removes the data from global analytics.');">
+                                {% csrf_token %}
+                                <button type="submit" class="w-10 h-10 bg-red-50 text-red-400 rounded-xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center ml-auto shadow-sm">
+                                    <i class="fas fa-trash-can text-sm"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-20 text-center">
+                            <i class="fas fa-clipboard-check text-5xl text-gray-100 mb-4"></i>
+                            <p class="text-gray-400 font-bold uppercase text-xs tracking-widest">No reviews pending audit</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

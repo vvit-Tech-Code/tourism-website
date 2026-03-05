@@ -1,0 +1,33 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block title %}Verify OTP | Bharat AI{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center py-24 px-4">
+    <div class="max-w-md w-full bg-white p-12 rounded-[2.5rem] border border-gray-100 shadow-2xl text-center">
+        <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-emerald-100">
+            <i class="fa-solid fa-shield-halved text-3xl text-emerald-700"></i>
+        </div>
+        <h2 class="font-heading text-2xl font-bold text-emerald-900 mb-2">Security Verification</h2>
+        <p class="text-xs text-gray-400 font-black uppercase tracking-[0.2em] mb-8">Enter 6-Digit Code</p>
+
+        <form method="POST" class="space-y-8">
+            {% csrf_token %}
+            <div class="flex justify-center gap-3">
+                <input type="text" name="otp" maxlength="6" placeholder="000000"
+                    class="w-full text-center tracking-[1em] text-2xl font-black py-4 bg-gray-50 border-2 border-transparent focus:border-emerald-500 rounded-2xl focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all">
+            </div>
+
+            <button type="submit" class="btn-glow w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs">
+                Validate Identity
+            </button>
+        </form>
+
+        <div class="mt-8">
+            <p class="text-[10px] text-gray-400 font-bold uppercase mb-2">Code expires in 10 minutes</p>
+            <a href="#" class="text-emerald-700 font-bold text-xs hover:underline">Resend New Code</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

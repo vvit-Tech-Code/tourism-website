@@ -1,0 +1,67 @@
+{% extends 'base2.html' %}
+{% block header_title %}Service Verification Hub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto pb-20">
+    <div class="mb-12">
+        <h3 class="text-3xl font-black text-emerald-900 tracking-tighter uppercase">Service Provider Audit</h3>
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Verify and manage the national network of tourist services</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div class="card-stat p-8 bg-white border-l-8 border-l-gold shadow-sm">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pending Guides</p>
+            <h3 class="text-4xl font-bold text-emerald-900">{{ pending_guides_count }}</h3>
+        </div>
+        <div class="card-stat p-8 bg-white border-l-8 border-l-emerald-600 shadow-sm">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pending Homestays</p>
+            <h3 class="text-4xl font-bold text-emerald-900">{{ pending_homestays_count }}</h3>
+        </div>
+    </div>
+
+    <div class="card-stat bg-white overflow-hidden rounded-[40px] shadow-xl border border-emerald-50 mb-12">
+        <div class="p-8 border-b border-gray-50 flex justify-between items-center">
+            <h4 class="font-black text-emerald-900 uppercase text-xs tracking-widest">Local Professional Guides</h4>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50/50">
+                    <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                        <th class="px-8 py-6">Guide Details</th>
+                        <th class="px-8 py-6">Destination</th>
+                        <th class="px-8 py-6">Identity Status</th>
+                        <th class="px-8 py-6 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    {% for guide in guides %}
+                    <tr class="hover:bg-emerald-50/30 transition-all">
+                        <td class="px-8 py-6">
+                            <p class="font-bold text-emerald-900">{{ guide.name }}</p>
+                            <p class="text-[10px] text-gray-400 font-bold italic">{{ guide.phone }}</p>
+                        </td>
+                        <td class="px-8 py-6 text-xs font-bold text-gray-600">{{ guide.destination.name }}</td>
+                        <td class="px-8 py-6">
+                            {% if guide.is_verified %}
+                                <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-black uppercase"><i class="fas fa-check-double mr-1"></i> Verified</span>
+                            {% else %}
+                                <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase"><i class="fas fa-clock mr-1"></i> Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <form action="{% url 'toggle_service_verification' 'guide' guide.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all
+                                    {% if guide.is_verified %}border-red-100 text-red-500 hover:bg-red-50{% else %}border-emerald-100 text-emerald-600 hover:bg-emerald-50{% endif %}">
+                                    {% if guide.is_verified %}Revoke{% else %}Verify Now{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
