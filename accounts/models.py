@@ -33,7 +33,7 @@ class User(AbstractUser):
     is_verified = models.BooleanField(default=False)
     login_count = models.PositiveIntegerField(default=0)
     full_name = models.CharField(max_length=100, blank=True)
-    profile_picture = models.ImageField(upload_to='profiles/', default='profiles/default_avatar.png')
+    profile_picture = models.ImageField(upload_to='profiles/', default='profiles/default_user.png', blank=True)
     phone_number = models.CharField(max_length=15, blank=True)
 
     USERNAME_FIELD = 'email'

@@ -1,0 +1,90 @@
+# Project Analysis: AI-Enabled Smart Digital Tourism Platform
+
+This document provides a detailed breakdown of the Django project structure, its architecture, and the roles of its various components. This guide is designed for project presentations, vivas, or technical interviews.
+
+---
+
+## 🏗️ Project Structure & File Purpose
+
+Individual components are organized into modular Django **Apps**. Below is the breakdown of the entire project tree.
+
+### 1. Root Directory Files
+| File / Folder | Purpose | Usage | Layer |
+| :--- | :--- | :--- | :--- |
+| [manage.py](file:///c:/Users/NEW/Desktop/tourism-website-/manage.py) | Command-line utility. | Run server, migrate DB, create superusers. | Configuration |
+| [db.sqlite3](file:///c:/Users/NEW/Desktop/tourism-website-/db.sqlite3) | Local database file. | Stores Users, Destinations, Reviews, etc. | Backend/Data |
+| [.env](file:///c:/Users/NEW/Desktop/tourism-website-/.env) | Environment variables. | Stores API keys and secret keys. | Configuration |
+| [req.txt](file:///c:/Users/NEW/Desktop/tourism-website-/req.txt) | Dependency list. | Python packages required (e.g., Django, TextBlob). | Configuration |
+| [seed_india.py](file:///c:/Users/NEW/Desktop/tourism-website-/seed_india.py) | Data population script. | Seeds 1000 Indian tourism locations into the DB. | Utility |
+
+### 2. The Core Configuration (`config/`)
+| File | Purpose | Interactions | Layer |
+| :--- | :--- | :--- | :--- |
+| [settings.py](file:///c:/Users/NEW/Desktop/tourism-website-/config/settings.py) | Main project settings. | Defines `INSTALLED_APPS`, DB config, AI keys. | Configuration |
+| [urls.py](file:///c:/Users/NEW/Desktop/tourism-website-/config/urls.py) | Root URL routing. | Directs traffic to specific apps based on URL. | Backend |
+| [wsgi.py](file:///c:/Users/NEW/Desktop/tourism-website-/config/wsgi.py) / [asgi.py](file:///c:/Users/NEW/Desktop/tourism-website-/config/asgi.py) | Web server interfaces. | Used for production deployment. | Configuration |
+
+### 3. Feature-Specific Apps
+| App Name | Purpose | Key Components |
+| :--- | :--- | :--- |
+| **`accounts`** | User management. | Signup, Login, OTP Verification, Dashboards. |
+| **[destinations](file:///c:/Users/NEW/Desktop/tourism-website-/services/views.py#39-46)** | Tourism Content. | Destinations, Local Guides, Homestays. |
+| **`ai_engine`** | AI Logic. | Sentiment Analysis, Trip Planning logic. |
+| **`services`** | Platform Features. | Reviews, Public Landing Page, About Vision. |
+| **`notifications`**| User Engagement. | Real-time in-app alerts and notifications. |
+
+---
+
+## 🏛️ Django MVT Architecture
+
+The project follows the **Model-View-Template (MVT)** architecture:
+
+1.  **Model (Data Layer):** Defined in [models.py](file:///c:/Users/NEW/Desktop/tourism-website-/services/models.py). Represents the database structure. 
+    *   *Example:* [Destination](file:///c:/Users/NEW/Desktop/tourism-website-/destinations/models.py#32-56) model stores name, category, and geolocation for Maps.
+2.  **View (Logic Layer):** Defined in [views.py](file:///c:/Users/NEW/Desktop/tourism-website-/accounts/views.py). The "Brain" that processes data.
+    *   *Example:* [submit_review](file:///c:/Users/NEW/Desktop/tourism-website-/services/views.py#51-94) view uses AI to analyze sentiment before saving.
+3.  **Template (Presentation Layer):** Standard HTML/CSS for the UI.
+    *   *Example:* [landing.html](file:///c:/Users/NEW/Desktop/tourism-website-/templates/landing.html) displays the dynamic AI-analyzed review feed.
+
+---
+
+## 🛣️ Request Lifecycle (The "Flow")
+
+When a user interacts with the system, the data flows as follows:
+
+1.  **Request (Browser):** User clicks "View Details" (URL: `/destinations/5/`).
+2.  **URL Resolver ([urls.py](file:///c:/Users/NEW/Desktop/tourism-website-/config/urls.py)):** Django matches the URL to a view in the [destinations](file:///c:/Users/NEW/Desktop/tourism-website-/services/views.py#39-46) app.
+3.  **View Logic ([views.py](file:///c:/Users/NEW/Desktop/tourism-website-/accounts/views.py)):** The view function runs and checks for the ID `5`.
+4.  **Database ([models.py](file:///c:/Users/NEW/Desktop/tourism-website-/services/models.py)):** The view fetches data from the [Destination](file:///c:/Users/NEW/Desktop/tourism-website-/destinations/models.py#32-56) table.
+5.  **Context Building:** The view bundles the data (e.g., Name, Images) into a context dictionary.
+6.  **Rendering:** The view sends the context to the template (`details_pub.html`).
+7.  **Response:** The rendered HTML is sent back to the browser.
+
+---
+
+## 📄 Purpose of Critical Files & Interactions
+
+| File | Role | Primary Interactions |
+| :--- | :--- | :--- |
+| **[models.py](file:///c:/Users/NEW/Desktop/tourism-website-/services/models.py)** | **Data Blueprint**. Defines DB schema. | Views (query), Admin (manage). |
+| **[views.py](file:///c:/Users/NEW/Desktop/tourism-website-/accounts/views.py)** | **Business Logic**. Processes requests. | Models (data), Templates (UI), Forms (input). |
+| **[urls.py](file:///c:/Users/NEW/Desktop/tourism-website-/config/urls.py)** | **Routing Table**. Maps URLs to views. | Browser (entry), Views (action). |
+| **[forms.py](file:///c:/Users/NEW/Desktop/tourism-website-/destinations/forms.py)** | **Validation Layer**. Checks user input. | Templates (fields), Views (processing). |
+| **[admin.py](file:///c:/Users/NEW/Desktop/tourism-website-/accounts/admin.py)** | **Management**. Configures admin panel. | Models (CRUD operations). |
+| **[settings.py](file:///c:/Users/NEW/Desktop/tourism-website-/config/settings.py)** | **Global Config**. Settings for the whole project.| All Apps (constants, middleware). |
+
+---
+
+## 🤖 AI Components (The "Smart" Part)
+
+*   **Sentiment Analysis:** Uses `TextBlob` in [ai_engine/logic.py](file:///c:/Users/NEW/Desktop/tourism-website-/ai_engine/logic.py) to classify feedback.
+*   **Dynamic Scoring:** Destinations are ranked using a weighted formula: (Rating * 0.4) + (Sentiment * 0.4) + (Popularity * 0.2).
+*   **AI Itinerary:** Stores day-wise automated plans as `JSONField` in the [Itinerary](file:///c:/Users/NEW/Desktop/tourism-website-/destinations/models.py#17-28) model.
+
+---
+
+## 🎓 Viva/Interview Tips
+
+*   **Custom User:** Mention using `AbstractUser` in `accounts` for email-based login.
+*   **Scalability:** Explain how modular apps make the project easier to maintain.
+*   **AI USP:** Highlight that the project doesn't just store data but "understands" user feedback via NLP.

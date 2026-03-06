@@ -1,0 +1,75 @@
+PROJECT STRUCTURE EXPLANATION: AI-Enabled Smart Digital Tourism Platform
+
+This document describes the purpose and function of each folder and important file in the Django project. It is structured for project presentations and interviews.
+
+---
+1. MAJOR APP FOLDERS
+---
+
+accounts/
+Purpose: This Django app manages everything related to users.
+How it is used: It handles User Registration, Login, Profile management, and Role-Based Access Control (RBAC) (e.g., distinguishing between a "Tourist" and an "Admin"). It also contains the logic for Email OTP verification.
+
+destinations/
+Purpose: Acts as the primary "Content" app of the project.
+How it is used: It stores and displays information about tourist spots, including their descriptions, images, and geolocation (latitude/longitude) for mapping. It also manages Local Guides and Homestays associated with those locations.
+
+ai_engine/
+Purpose: Contains the "Smart" logic of the platform.
+How it is used: It stores the algorithms for Sentiment Analysis (which analyzes user reviews) and the AI Trip Planner (which generates automated travel itineraries). It acts as a bridge between the data and the AI libraries (like TextBlob).
+
+services/
+Purpose: Manages the public-facing features and platform interactions.
+How it is used: It handles the landing page, the "About" section, and the Review System. This is where the logic for a user submitting a review and it being processed by the AI happens.
+
+notifications/
+Purpose: Handles real-time engagement and alerts.
+How it is used: It tracks and displays in-app notifications for users (e.g., "Your review has been successfully analyzed by AI").
+
+---
+2. GLOBAL PROJECT FOLDERS
+---
+
+config/ (The Project Root)
+Purpose: This is the administrative heart of the Django project.
+How it is used: It contains the master settings for the entire website (settings.py) and the primary navigation map (urls.py) that tells Django which app to open when a user enters a specific address.
+
+templates/
+Purpose: Stores the "Frontend" UI structure (HTML files).
+How it is used: Django views take data from the database and "inject" it into these HTML files to show a complete page to the user.
+
+static/
+Purpose: Stores "Static" resources like CSS files, JavaScript, and project images (logos).
+How it is used: These files are sent directly to the browser to provide the styling and interactivity (animations, buttons) for your website.
+
+---
+3. IMPORTANT FILES (The "Building Blocks")
+---
+
+models.py (The Database Blueprint)
+Purpose: Defines the structure of your data tables.
+How it is used: Each class in this file represents a table in the database. It defines what fields each item has (name, description, etc.).
+
+views.py (The Brain/Logic)
+Purpose: Contains the functions that process user requests.
+How it is used: It fetches data from the Model, performs logic (like AI analysis), and sends the result to a Template.
+
+urls.py (The Navigator)
+Purpose: Maps web addresses (URLs) to specific Views.
+How it is used: If a user types /login/, this file tells Django to run the login_view function.
+
+forms.py (The Validator)
+Purpose: Manages user input and ensures it is safe.
+How it is used: It renders input fields in HTML and checks if the data entered is valid before saving it.
+
+admin.py (The Dashboard Config)
+Purpose: Tells Django what to show in the automatic /admin panel.
+How it is used: It allows the Project Admin to manage data through a web interface.
+
+settings.py (The Remote Control)
+Purpose: Contains all global configurations for the project.
+How it is used: This is where you connect the database, add new apps, and set up AI API keys.
+
+manage.py (The Utility Tool)
+Purpose: A command-line script for project management.
+How it is used: You use it to run the server, create database tables, and create admin accounts.
