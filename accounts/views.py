@@ -14,6 +14,7 @@ from destinations.models import Destination, LocalGuide, Homestay
 from services.models import Review
 from notifications.models import Notification
 from ai_engine.models import TripPlan
+from ai_engine.logic import calculate_recommendation_score
 
 
 User = get_user_model()
@@ -109,12 +110,34 @@ def user_dashboard(request):
     # Count only unread notifications for the 'LIVE' badge feel
     unread_notifications = Notification.objects.filter(user=request.user, is_read=False).count()
     
-    # 2. Smart Recommendation Logic (AI Feature)
-    # Requirement: Ranking system based on ratings and sentiment scores
-    # We fetch a destination that has a high average sentiment
-    rec_place = Destination.objects.annotate(
-        avg_s=Avg('reviews__sentiment_score')
-    ).order_by('-avg_s', '?').first()
+    # 2. Smart Recommendation Logic (Weighted AI Feature) [cite: 894, 907]
+    # Uses: (Rating * 0.4) + (Sentiment * 0.4) + (Popularity * 0.2)
+    places = Destination.objects.annotate(
+        avg_r=Avg('reviews__rating'),
+        avg_s=Avg('reviews__sentiment_score'),
+        r_count=Count('reviews')
+    ).filter(r_count__gt=0)
+
+    best_place = None
+    max_score = 0
+    rec_confidence = "Low"
+
+    for p in places:
+        # Pass data to our AI logic engine
+        score = calculate_recommendation_score(p.avg_r or 0, p.avg_s or 0, p.r_count)
+        if score > max_score:
+            max_score = score
+            best_place = p
+    
+    # Calculate confidence label based on the AI score
+    if max_score > 75: rec_confidence = "High"
+    elif max_score > 40: rec_confidence = "Medium"
+    else: rec_confidence = "Low"
+
+    # Fallback if no reviews exist yet (shuffled pool)
+    if not best_place:
+        best_place = Destination.objects.order_by('?').first()
+        rec_confidence = "Analyzing..."
 
     # 3. Recent Notifications for the sidebar card
     recent_notes = Notification.objects.filter(user=request.user).order_by('-created_at')[:3]
@@ -124,7 +147,8 @@ def user_dashboard(request):
         'review_count': user_reviews.count(),
         'plan_count': trip_plans_count,
         'unread_count': unread_notifications,
-        'rec_place': rec_place,
+        'rec_place': best_place,
+        'rec_confidence': rec_confidence,
         'recent_notes': recent_notes,
     }
     return render(request, 'accounts/user_dashboard.html', context)
