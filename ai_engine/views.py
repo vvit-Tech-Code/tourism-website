@@ -23,6 +23,10 @@ def trip_planner_view(request):
         # 2. Generate the itinerary via Gemini
         itinerary = generate_smart_itinerary(days, category, state, city)
         
+        # Ensure itinerary is a list even if generation fails or returns something else
+        if not isinstance(itinerary, list):
+            itinerary = []
+
         if itinerary:
             # 3. SAVE to Database automatically
             # This allows the user to find it in "Saved Journeys" later
@@ -62,20 +66,39 @@ def chatbot_query(request):
             # Using the validated 2.5 Lite model
             model = genai.GenerativeModel("gemini-2.5-flash-lite")
             
-            # CONCISE SYSTEM INSTRUCTION
-            # This prevents the AI from repeating long introductions.
+            # ENFORCE STRICT JSON OUTPUT
             instruction = (
-                "You are Bharat AI, a professional travel guide for all of India. "
-                "Be direct, conversational, and expert. Skip long introductions. "
-                "Provide bulleted safety, transport, and cultural tips for the specific state mentioned. "
-                "Always recommend one hidden gem."
+                "You are a smart travel assistant. respond ONLY in valid JSON format. "
+                "JSON Schema: "
+                "{"
+                "  \"city\": \"City Name\","
+                "  \"safety_tips\": [\"tip1\", \"tip2\", \"tip3\"],"
+                "  \"transport_tips\": [\"tip1\", \"tip2\", \"tip3\"],"
+                "  \"cultural_tips\": [\"tip1\", \"tip2\", \"tip3\"],"
+                "  \"top_places\": [{\"name\": \"Place Name\", \"description\": \"short description\"}]"
+                "}"
             )
             
-            response = model.generate_content(f"{instruction} User Message: {user_msg}")
+            # Use generation_config to force JSON if the SDK version supports it
+            response = model.generate_content(
+                f"{instruction} User Query: {user_msg}",
+                generation_config={"response_mime_type": "application/json"}
+            )
             
-            return JsonResponse({'reply': response.text})
-        except Exception:
-            return JsonResponse({'reply': "My intelligence circuits are resetting. Try again in a minute!"})
+            # Parse the JSON response
+            try:
+                ai_data = json.loads(response.text)
+                return JsonResponse({'reply': ai_data})
+            except json.JSONDecodeError:
+                # Fallback in case Gemini sends bad JSON
+                return JsonResponse({'reply': {
+                    "city": "Unknown",
+                    "error": "Failed to generate structured data",
+                    "raw": response.text
+                }})
+
+        except Exception as e:
+            return JsonResponse({'reply': "My intelligence circuits are resetting. Please try again shortly!"})
             
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
