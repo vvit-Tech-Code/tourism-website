@@ -1,0 +1,98 @@
+{% extends 'base2.html' %}
+{% block header_title %}User Governance{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto pb-20">
+    <div class="mb-12 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div>
+            <h3 class="text-3xl font-black text-emerald-900 tracking-tighter uppercase">Registered Accounts</h3>
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Audit roles, verification, and platform access</p>
+        </div>
+        <div class="bg-white px-8 py-4 rounded-[24px] shadow-sm border border-emerald-50">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Community Size</p>
+            <p class="text-2xl font-black text-emerald-900">{{ users.count }} <span class="text-xs text-emerald-500">Members</span></p>
+        </div>
+    </div>
+
+    <div class="card-stat bg-white overflow-hidden rounded-[40px] shadow-xl border border-emerald-50">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50/50 border-b border-gray-100">
+                    <tr class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                        <th class="px-8 py-6">Tourist Profile</th>
+                        <th class="px-8 py-6">Authority Role</th>
+                        <th class="px-8 py-6">Access Status</th>
+                        <th class="px-8 py-6">Identity Verification</th>
+                        <th class="px-8 py-6 text-right">Governance Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 text-sm">
+                    {% for u in users %}
+                    <tr class="hover:bg-emerald-50/30 transition-all group">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-900 text-emerald-400 flex items-center justify-center font-black text-lg shadow-inner">
+                                    {{ u.email|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-emerald-900">{{ u.email }}</p>
+                                    <p class="text-[10px] text-gray-400 font-black uppercase tracking-tighter">
+                                        Joined {{ u.date_joined|date:"d M Y" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-8 py-6">
+                            {% if u.role == 'admin' %}
+                                <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black tracking-widest">ADMIN</span>
+                            {% else %}
+                                <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black tracking-widest">TOURIST</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-8 py-6">
+                            {% if u.is_active %}
+                                <div class="flex items-center gap-2 text-emerald-600 font-black text-[10px]">
+                                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> ACTIVE
+                                </div>
+                            {% else %}
+                                <div class="flex items-center gap-2 text-red-500 font-black text-[10px]">
+                                    <span class="w-2 h-2 bg-red-500 rounded-full"></span> SUSPENDED
+                                </div>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-8 py-6">
+                            {% if u.is_verified %}
+                                <span class="text-emerald-500 flex items-center gap-2 font-bold text-[10px]">
+                                    <i class="fas fa-check-double"></i> VERIFIED
+                                </span>
+                            {% else %}
+                                <span class="text-gray-300 flex items-center gap-2 font-bold text-[10px]">
+                                    <i class="fas fa-hourglass-start"></i> PENDING
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-8 py-6 text-right">
+                            <form action="{% url 'toggle_user_status' u.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all shadow-sm
+                                    {% if u.is_active %}
+                                        border-red-100 text-red-500 hover:bg-red-600 hover:text-white
+                                    {% else %}
+                                        border-emerald-100 text-emerald-600 hover:bg-emerald-600 hover:text-white
+                                    {% endif %}">
+                                    {% if u.is_active %}Suspend Access{% else %}Restore Access{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block title %}Login | Bharat AI{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center py-24 px-4 relative overflow-hidden">
+    <div class="absolute top-1/3 left-1/4 w-72 h-72 bg-emerald-700/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-1/3 right-1/4 w-72 h-72 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div class="max-w-md w-full space-y-10 bg-white/80 backdrop-blur-2xl p-10 rounded-[2.5rem] border border-white shadow-2xl animate-in fade-in slide-in-from-bottom-5">
+        
+        <div class="text-center">
+            <div class="w-20 h-20 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-emerald-100 transition-transform hover:rotate-6">
+                <i class="fa-solid fa-fingerprint text-3xl text-emerald-700"></i>
+            </div>
+            <h2 class="font-heading text-3xl font-bold text-emerald-900 tracking-tight">
+                Welcome <span class="text-emerald-600">Back</span>
+            </h2>
+            <p class="mt-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">
+                lOGIN
+            </p>
+        </div>
+        
+        {% if messages %}
+        {% for message in messages %}
+        <div id="alert-box" class="bg-red-50 border border-red-100 p-4 rounded-xl mb-6 flex justify-between items-center">
+            <p class="text-[10px] font-black text-red-600 uppercase tracking-widest">
+                <i class="fa-solid fa-circle-exclamation mr-2"></i> {{ message }}
+            </p>
+            <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        
+        <form class="mt-8 space-y-6" method="POST">
+            {% csrf_token %}
+            <div class="space-y-5">
+                <div class="relative group">
+                    <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors"></i>
+                    <input name="username" type="email" required placeholder="Email Address"
+                           class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-100 rounded-xl focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 outline-none font-medium text-gray-800 placeholder-gray-400 transition-all">
+                </div>
+                
+                <div class="relative group">
+                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors"></i>
+                    <input name="password" type="password" required placeholder="Security Password"
+                           class="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-100 rounded-xl focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 outline-none font-medium text-gray-800 placeholder-gray-400 transition-all">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
+                <a href="{% url 'password_reset' %}" class="text-gray-400 hover:text-emerald-700 transition underline decoration-gray-200">Forgot Password?</a>
+                <a href="{% url 'signup' %}" class="text-emerald-600 hover:underline">Register Account</a>
+            </div>
+
+            <button type="submit" class="btn-glow w-full py-4 rounded-xl font-bold uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 active:scale-95 transition-all">
+                <i class="fa-solid fa-unlock"></i> Authorize Login
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

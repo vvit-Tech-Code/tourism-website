@@ -1,0 +1,76 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block header_title %}Discover Jharkhand{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <div class="flex flex-wrap gap-3">
+            <a href="?" class="px-6 py-2 {% if not category %}bg-emerald-800 text-white{% else %}bg-emerald-50 text-emerald-800{% endif %} rounded-xl font-bold text-[10px] uppercase tracking-widest transition shadow-sm">All Sites</a>
+            <a href="?category=ECO" class="px-6 py-2 {% if category == 'ECO' %}bg-emerald-800 text-white{% else %}bg-emerald-50 text-emerald-800{% endif %} rounded-xl font-bold text-[10px] uppercase tracking-widest transition shadow-sm">Eco-Tourism</a>
+            <a href="?category=CULTURAL" class="px-6 py-2 {% if category == 'CULTURAL' %}bg-emerald-800 text-white{% else %}bg-emerald-50 text-emerald-800{% endif %} rounded-xl font-bold text-[10px] uppercase tracking-widest transition shadow-sm">Cultural Heritage</a>
+        </div>
+
+        <form method="GET" action="." class="relative max-w-md w-full">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Search by name or description..." 
+                class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-white shadow-sm focus:ring-2 focus:ring-emerald-500 transition">
+        </form>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for place in places %}
+        <div class="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col">
+            <div class="h-60 overflow-hidden relative">
+                {% if place.image %}
+                    <img src="{{ place.image.url }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                {% else %}
+                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">No Image</div>
+                {% endif %}
+                
+                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-emerald-800 shadow-sm">
+                    {{ place.get_category_display }}
+                </div>
+
+                {% if forloop.counter <= 3 and not search_query %}
+                <div class="absolute top-4 left-4 bg-gold text-emerald-900 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                    <i class="fas fa-robot mr-1"></i> AI Ranked #{{ forloop.counter }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="p-8 flex-grow flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-emerald-900 leading-tight">{{ place.name }}</h3>
+                    <div class="bg-emerald-50 px-3 py-1 rounded-lg text-emerald-700 font-bold text-sm">
+                        {{ place.avg_rating|default:"5.0"|floatformat:1 }} <i class="fas fa-star text-gold ml-1"></i>
+                    </div>
+                </div>
+                
+                <p class="text-xs text-gray-500 leading-relaxed mb-6 line-clamp-2">
+                    {{ place.description }}
+                </p>
+
+                <div class="mt-auto pt-6 border-t border-gray-50 flex justify-between items-center">
+                    <div class="flex gap-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-user-tie text-emerald-600 text-[10px]"></i>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase">{{ place.guides.count }} Guides</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'place_detail' place.pk %}" class="text-[10px] font-black uppercase tracking-widest text-emerald-800 hover:text-emerald-600 transition">
+                        View Details <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-20 text-center">
+            <i class="fas fa-search-minus text-4xl text-gray-200 mb-4"></i>
+            <p class="text-gray-400 font-bold uppercase tracking-widest text-xs">No matching destinations found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

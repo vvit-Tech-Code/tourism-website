@@ -1,0 +1,127 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}My Profile | Bharat AI{% endblock %}
+{% block header_title %}Account Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="card-stat p-10 mb-10 bg-white shadow-sm relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-[100px] -z-0"></div>
+        
+        <form method="POST" enctype="multipart/form-data" class="relative z-10">
+            {% csrf_token %}
+            <div class="flex flex-col md:flex-row items-center gap-10">
+                <div class="relative group">
+                    <div class="w-32 h-32 rounded-[32px] overflow-hidden border-4 border-white shadow-xl ring-1 ring-gray-100">
+                        <img id="avatar-preview" src="{{ user.profile_picture.url }}" class="w-full h-full object-cover">
+                    </div>
+                    <label for="profile_picture" class="absolute -bottom-2 -right-2 bg-emerald-700 text-white w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer shadow-lg hover:bg-emerald-800 transition-all">
+                        <i class="fas fa-camera text-sm"></i>
+                        <input type="file" name="profile_picture" id="profile_picture" class="hidden" onchange="previewImage(this)">
+                    </label>
+                </div>
+
+                <div class="flex-1 text-center md:text-left">
+                    <h3 class="text-2xl font-bold text-emerald-900 mb-1">{{ user.full_name|default:"Traveler Name" }}</h3>
+                    <p class="text-sm font-medium text-gray-400 mb-4">{{ user.email }}</p>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+                            {{ user.role }}
+                        </span>
+                        {% if user.is_verified %}
+                        <span class="px-4 py-1.5 bg-gold/10 text-emerald-800 rounded-full text-[10px] font-black uppercase tracking-widest border border-gold/20">
+                            <i class="fas fa-check-circle mr-1"></i> Verified
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-10 border-gray-50">
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Full Name</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                        <input type="text" name="full_name" value="{{ user.full_name }}" placeholder="Enter your name"
+                            class="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-medium">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Phone Number</label>
+                    <div class="relative">
+                        <i class="fas fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                        <input type="text" name="phone_number" value="{{ user.phone_number }}" placeholder="+91 00000 00000"
+                            class="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-medium">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Email Address (Read Only)</label>
+                    <div class="relative opacity-60">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                        <input type="email" value="{{ user.email }}" readonly
+                            class="w-full pl-12 pr-4 py-4 bg-gray-100 border-none rounded-2xl cursor-not-allowed outline-none font-medium">
+                    </div>
+                </div>
+
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-emerald-800 text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-emerald-700 transition-all shadow-lg active:scale-95">
+                        <i class="fas fa-save mr-2"></i> Update Profile
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <div class="card-stat p-8 bg-white border border-gray-100">
+            <h4 class="font-bold text-emerald-900 mb-6 flex items-center gap-3">
+                <i class="fas fa-shield-alt text-emerald-700"></i> Account Security
+            </h4>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Login Count</p>
+                    <span class="text-sm font-black text-emerald-700">{{ user.login_count }} Sessions</span>
+                </div>
+                <a href="{% url 'password_reset' %}" class="flex justify-between items-center p-4 border border-gray-100 rounded-2xl hover:bg-emerald-50 transition-colors">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Password Protocol</p>
+                    <span class="text-xs font-bold text-emerald-800">Change <i class="fas fa-chevron-right ml-1"></i></span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card-stat p-8 bg-white border border-gray-100">
+            <h4 class="font-bold text-emerald-900 mb-6 flex items-center gap-3">
+                <i class="fas fa-bell text-emerald-700"></i> Notifications
+            </h4>
+            <div class="space-y-4">
+                <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer">
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Email Alerts</span>
+                    <input type="checkbox" checked class="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                </label>
+                <div class="p-4 rounded-2xl border border-dashed border-gray-200">
+                    <p class="text-[10px] text-gray-400 font-bold leading-relaxed">
+                        Security notifications are enabled by default and cannot be disabled to ensure your account remains safe.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatar-preview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}

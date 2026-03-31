@@ -1,0 +1,101 @@
+{% extends 'base2.html' %}
+{% block header_title %}Tourist Console{% endblock %}
+
+{% block content %}
+<div class="mb-10">
+    <h1 class="text-2xl font-bold text-emerald-900">Namaste, {{ full_name }}!</h1>
+    <p class="text-sm text-gray-500">Ready to explore India's hidden gems today?</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+    <div class="card-stat p-8 shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+            <div class="p-3 bg-emerald-50 rounded-xl text-emerald-700 text-xl">
+                <i class="fas fa-bell"></i>
+            </div>
+            {% if unread_count > 0 %}
+            <span class="text-[10px] font-black text-white bg-red-500 px-3 py-1 rounded-full animate-pulse">NEW</span>
+            {% endif %}
+        </div>
+        <h3 class="text-3xl font-bold text-emerald-900">{{ unread_count|stringformat:"02d" }}</h3>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Unread Alerts</p>
+    </div>
+
+    <div class="card-stat p-8 shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+            <div class="p-3 bg-gold/10 rounded-xl text-gold text-xl">
+                <i class="fas fa-star"></i>
+            </div>
+        </div>
+        <h3 class="text-3xl font-bold text-emerald-900">{{ review_count|stringformat:"02d" }}</h3>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">My Reviews</p>
+    </div>
+
+    <div class="card-stat p-8 shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+            <div class="p-3 bg-cyan-50 rounded-xl text-cyan-600 text-xl">
+                <i class="fas fa-route"></i>
+            </div>
+        </div>
+        <h3 class="text-3xl font-bold text-emerald-900">{{ plan_count|stringformat:"02d" }}</h3>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">AI Trip Plans</p>
+    </div>
+</div>
+
+<div class="grid lg:grid-cols-2 gap-10">
+    <div class="bg-emerald-900 rounded-[40px] p-12 text-white relative overflow-hidden shadow-2xl">
+        <div class="absolute -bottom-10 -right-10 text-[200px] opacity-10">
+            <i class="fas fa-brain"></i>
+        </div>
+        <div class="relative z-10">
+            <div class="inline-block bg-white/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-white/20">
+                AI Intelligence Recommendation
+            </div>
+            {% if rec_place %}
+                <h4 class="text-3xl font-bold mb-4">{{ rec_place.name }}</h4>
+                <p class="text-emerald-100 mb-8 leading-relaxed opacity-80">
+                    Based on recent high-sentiment reviews and your preference for <strong>{{ rec_place.get_category_display }}</strong>, we suggest exploring this site. 
+                    The AI confidence score for this recommendation is <strong>High</strong>.
+                </p>
+                <a href="{% url 'place_detail' rec_place.pk %}" class="inline-block bg-gold text-emerald-900 px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:scale-105 transition shadow-lg">
+                    Explore Now
+                </a>
+            {% else %}
+                <h4 class="text-3xl font-bold mb-4">Start Exploring!</h4>
+                <p class="text-emerald-100 mb-8 opacity-80">Add reviews to destinations to help our AI suggest better places for you.</p>
+                <a href="{% url 'destinations_public' %}" class="inline-block bg-gold text-emerald-900 px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs">Browse Places</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card-stat p-10 shadow-sm">
+        <h4 class="font-bold text-emerald-900 mb-8">Recent Notifications</h4>
+        <div class="space-y-6">
+            {% for note in recent_notes %}
+            <div class="flex gap-4 items-start border-b border-gray-50 pb-4 last:border-0">
+                <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-700 flex-shrink-0">
+                    <i class="fas {% if 'Verify' in note.title %}fa-check-circle{% else %}fa-info-circle{% endif %}"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-emerald-900">{{ note.title }}</p>
+                    <p class="text-[10px] text-gray-400 font-medium">{{ note.message }}</p>
+                    <p class="text-[8px] text-emerald-600 font-bold uppercase mt-1">{{ note.created_at|timesince }} ago</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-10">
+                <p class="text-gray-400 text-sm">No recent notifications.</p>
+            </div>
+            {% endfor %}
+            
+            {% if recent_notes %}
+            <div class="pt-4">
+                <a href="{% url 'notifications_list' %}" class="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-800 transition">
+                    View All Notifications <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

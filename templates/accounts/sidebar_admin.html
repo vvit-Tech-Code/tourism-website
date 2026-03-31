@@ -1,0 +1,48 @@
+<p class="sidebar-label text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 px-4">Authority Menu</p>
+
+<a href="{% url 'admin_dashboard' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+    <i class="fas fa-chart-line text-lg"></i>
+    <span class="sidebar-label">Analytics Console</span>
+</a>
+
+<a href="{% url 'destination_manager' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'destination_manager' %}active{% endif %}">
+    <i class="fas fa-map-location-dot text-lg"></i>
+    <span class="sidebar-label">Manage Places</span>
+</a>
+
+<a href="{% url 'manage_services' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'manage_services' %}active{% endif %}">
+    <i class="fas fa-user-shield text-lg"></i>
+    <span class="sidebar-label">Verify Services</span>
+</a>
+
+<a href="{% url 'admin_moderation' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'admin_moderation' %}active{% endif %}">
+    <i class="fas fa-comment-dots text-lg"></i>
+    <span class="sidebar-label">Moderate Reviews</span>
+</a>
+
+<a href="{% url 'user_manager' %}" 
+   class="nav-item px-4 py-3 text-sm font-bold {% if request.resolver_match.url_name == 'user_manager' %}active{% endif %}">
+    <i class="fas fa-users-gear text-lg"></i>
+    <span class="sidebar-label">User Manager</span>
+</a>
+
+<div class="mt-8 pt-8 border-t border-gray-50">
+    <p class="sidebar-label text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 px-4">System Alerts</p>
+    
+    <a href="{% url 'notifications_list' %}" 
+       class="nav-item px-4 py-3 text-sm font-bold flex justify-between items-center {% if request.resolver_match.url_name == 'notifications_list' %}active{% endif %}">
+        <div class="flex items-center gap-4">
+            <i class="fas fa-bell text-lg"></i>
+            <span class="sidebar-label">System Notifications</span>
+        </div>
+        {% if unread_notifications_count > 0 %}
+        <span class="sidebar-label bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full animate-pulse">
+            {{ unread_notifications_count }}
+        </span>
+        {% endif %}
+    </a>
+</div>

@@ -1,0 +1,68 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block header_title %}Rate Your Experience{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-10">
+    <div class="card-stat p-10 bg-white shadow-2xl border border-emerald-50 rounded-[40px]">
+        
+        <div class="mb-10 text-center">
+            <div class="w-20 h-20 bg-emerald-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-star-half-alt text-3xl text-emerald-700"></i>
+            </div>
+            <h3 class="text-3xl font-black text-emerald-900 mb-2">Reviewing {{ destination.name }}</h3>
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-[0.2em]">Authentic Feedback Ecosystem</p>
+        </div>
+
+        <form method="POST" class="space-y-8">
+            {% csrf_token %}
+            
+            <div>
+                <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest block mb-4 ml-2">Your Rating</label>
+                <div class="grid grid-cols-5 gap-3">
+                    {% for i in "12345" %}
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="rating" value="{{ i }}" class="peer hidden" required {% if i == "5" %}checked{% endif %}>
+                        
+                        <div class="flex flex-col items-center p-4 rounded-2xl bg-gray-50 border-2 border-transparent 
+                                    peer-checked:border-[#FFD700] peer-checked:bg-[#FFD700]/10 
+                                    group-hover:bg-gray-100 transition-all">
+                            <span class="text-lg font-bold mb-1 peer-checked:text-emerald-900">{{ i }}</span>
+                            <i class="fas fa-star text-xs text-gray-300 peer-checked:text-[#FFD700]"></i>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest block ml-2">Detailed Feedback</label>
+                <textarea name="comment" rows="5" required 
+                    placeholder="Describe the atmosphere, the local culture, or your guide's expertise..."
+                    class="w-full p-8 bg-gray-50 border-none rounded-[32px] outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all text-gray-700 leading-relaxed"></textarea>
+            </div>
+
+            <div class="bg-[#2E7D32] p-8 rounded-[32px] text-white relative overflow-hidden group">
+                <i class="fas fa-robot absolute -bottom-4 -right-4 text-7xl opacity-10 group-hover:rotate-12 transition-transform duration-700"></i>
+                <div class="relative z-10 flex gap-5 items-start">
+                    <div class="w-8 h-8 bg-[#FFD700] rounded-lg flex items-center justify-center text-emerald-950 shrink-0">
+                        <i class="fas fa-brain text-xs"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-black uppercase tracking-widest mb-1 text-[#FFD700]">Bharat AI Intelligence</p>
+                        <p class="text-[10px] text-emerald-100 font-medium leading-relaxed opacity-80">
+                            Upon submission, our ML models will analyze your feedback for sentiment trends to help improve Jharkhand's tourism ranking.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs text-white 
+                                       bg-[#2E7D32] hover:bg-[#1b5e20] active:scale-95 transition-all shadow-xl shadow-emerald-200/50">
+                Analyze & Post Review <i class="fas fa-paper-plane ml-2"></i>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

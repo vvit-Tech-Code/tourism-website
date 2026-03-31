@@ -1,0 +1,28 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block title %}Verification Failed | Bharat AI{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center py-24 px-4">
+    <div class="max-w-md w-full bg-white p-12 rounded-[40px] border border-red-50 shadow-2xl text-center">
+        <div class="w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-8">
+            <i class="fa-solid fa-circle-xmark text-4xl"></i>
+        </div>
+        
+        <h2 class="font-heading text-2xl font-bold text-gray-900 mb-4">Link Expired or Invalid</h2>
+        <p class="text-gray-500 text-sm leading-relaxed mb-8">
+            We couldn't verify your account. The link may have already been used, or the security token has expired for your protection.
+        </p>
+
+        <div class="space-y-4">
+            <a href="{% url 'signup' %}" class="btn-glow inline-block w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs">
+                Try Registering Again
+            </a>
+            <a href="/contact" class="inline-block text-[10px] font-bold text-gray-400 hover:text-emerald-700 uppercase tracking-widest">
+                Contact System Support
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

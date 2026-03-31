@@ -1,0 +1,205 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .ticker-wrap {
+        width: 100%;
+        overflow: hidden;
+        background-color: #1a4721; /* Darker Emerald for contrast */
+        border-bottom: 1px solid rgba(255,215,0,0.3);
+    }
+    .ticker-move {
+        display: flex;
+        width: max-content;
+        animation: ticker-scrolling 40s linear infinite;
+    }
+    .ticker-move:hover {
+        animation-play-state: paused;
+    }
+    .ticker-item {
+        padding: 12px 40px;
+        white-space: nowrap;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    @keyframes ticker-scrolling {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+</style>
+
+<div class="ticker-wrap">
+    <div class="ticker-move">
+        {% for update in review_updates %}
+        <div class="ticker-item">
+            <i class="fas fa-certificate text-gold animate-pulse"></i>
+            <span>
+                <strong class="text-gold">{{ update.user }}</strong> shared a 
+                <span class="{% if update.sentiment == 'positive' %}text-emerald-400{% elif update.sentiment == 'negative' %}text-red-400{% else %}text-gray-300{% endif %}">
+                    {{ update.sentiment }}
+                </span> review for 
+                <strong class="text-white">{{ update.place }}</strong>
+            </span>
+        </div>
+        {% empty %}
+        <div class="ticker-item">
+            <i class="fas fa-info-circle text-gold"></i>
+            Live review feed updates will appear here once tourists begin sharing experiences.
+        </div>
+        {% endfor %}
+        
+        {% for update in review_updates %}
+        <div class="ticker-item">
+            <i class="fas fa-certificate text-gold animate-pulse"></i>
+            <span><strong class="text-gold">{{ update.user }}</strong> shared a {{ update.sentiment }} review for <strong>{{ update.place }}</strong></span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<section class="relative min-h-[85vh] flex items-center px-8 py-12 bg-[#F0F8FF]/30">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+
+        <div class="z-10">
+            <div class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 shadow-sm">
+                <i class="fas fa-microchip"></i> AI-Integrated Governance
+            </div>
+
+            <h1 class="text-5xl lg:text-7xl font-extrabold text-emerald-900 leading-[1.1] mb-8">
+                The Future of <br>
+                <span class="text-emerald-600">Smart Tourism.</span>
+            </h1>
+
+            <p class="text-gray-600 text-lg mb-12 max-w-lg leading-relaxed font-medium">
+                Experience Jharkhand through an intelligent digital ecosystem. Connect with verified
+                local guides, discover eco-tourism hotspots, and plan your journey with AI-driven precision.
+            </p>
+
+            <div class="flex flex-wrap gap-5">
+                <a href="{% url 'destinations_public' %}"
+                   class="btn-glow px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-lg transition-all hover:scale-105">
+                    Start Exploration
+                </a>
+                <a href="{% url 'about_vision' %}"
+                   class="bg-white border border-gray-200 text-gray-700 px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-gray-50 transition shadow-sm">
+                    Project Vision
+                </a>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="rounded-[40px] overflow-hidden shadow-2xl border-[16px] border-white transform rotate-2 transition-all hover:rotate-0 duration-500">
+                <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=2071&auto=format&fit=crop"
+                     alt="Heritage India"
+                     class="w-full h-[550px] object-cover">
+            </div>
+
+            <div class="absolute -bottom-8 -left-8 bg-white p-8 rounded-3xl shadow-2xl z-20 border-l-8 border-emerald-600 max-w-[240px]">
+                <p class="text-[10px] font-black text-emerald-800 uppercase tracking-widest mb-2">
+                    Platform Trust
+                </p>
+                <p class="text-3xl font-bold text-emerald-900 mb-1">100%</p>
+                <p class="text-xs text-gray-500 font-medium leading-tight">
+                    Verified Local Guides & Homestays
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="py-32 px-8 bg-white">
+    <div class="max-w-7xl mx-auto">
+
+        <div class="mb-20 text-center">
+            <h2 class="text-4xl font-extrabold text-emerald-900 mb-4 tracking-tighter">
+                CENTRALIZED INFRASTRUCTURE
+            </h2>
+            <p class="text-gray-500 font-medium">
+                Key modules driving the Bharat AI experience.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-12">
+
+            <div class="group p-8 rounded-[32px] border border-gray-100 hover:bg-emerald-50 transition-all duration-500">
+                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-emerald-700 text-2xl shadow-sm mb-8 group-hover:bg-emerald-700 group-hover:text-white transition-all duration-500 border border-gray-50">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-emerald-900 tracking-tight">
+                    Sentiment Analytics
+                </h3>
+                <p class="text-gray-500 text-sm leading-relaxed font-medium">
+                    Our ML models process real-time tourist feedback to ensure safety,
+                    quality, and community satisfaction.
+                </p>
+            </div>
+
+            <div class="group p-8 rounded-[32px] border border-gray-100 hover:bg-emerald-50 transition-all duration-500">
+                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-emerald-700 text-2xl shadow-sm mb-8 group-hover:bg-emerald-700 group-hover:text-white transition-all duration-500 border border-gray-50">
+                    <i class="fas fa-map-location-dot"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-emerald-900 tracking-tight">
+                    Smart Mapping
+                </h3>
+                <p class="text-gray-500 text-sm leading-relaxed font-medium">
+                    Advanced geo-location integration providing distance calculation
+                    and nearby exploration of eco-tourism sites.
+                </p>
+            </div>
+
+            <div class="group p-8 rounded-[32px] border border-gray-100 hover:bg-emerald-50 transition-all duration-500">
+                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-emerald-700 text-2xl shadow-sm mb-8 group-hover:bg-emerald-700 group-hover:text-white transition-all duration-500 border border-gray-50">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-emerald-900 tracking-tight">
+                    Verified Services
+                </h3>
+                <p class="text-gray-500 text-sm leading-relaxed font-medium">
+                    Direct connection with local providers manually vetted by the
+                    administrator to eliminate fraudulent listings.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="py-24 px-8 bg-sky-50/50">
+    <div class="max-w-6xl mx-auto bg-emerald-900 rounded-[40px] p-16 text-center relative overflow-hidden shadow-2xl">
+
+        <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-800 rounded-full -mr-32 -mt-32 opacity-20"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-800 rounded-full -ml-32 -mb-32 opacity-10"></div>
+
+        <div class="relative z-10">
+            <h2 class="text-3xl lg:text-5xl font-bold text-white mb-8">
+                Ready to explore the <br> intelligent way?
+            </h2>
+
+            <p class="text-emerald-100 mb-12 max-w-2xl mx-auto text-lg opacity-80 font-medium">
+                Join Bharat AI today and access a world of curated heritage
+                and sustainable travel experiences.
+            </p>
+
+            {% if not user.is_authenticated %}
+            <a href="{% url 'signup' %}"
+               class="bg-white text-emerald-900 px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-xl inline-block">
+                Create Account
+            </a>
+            {% else %}
+            <a href="{% if user.role == 'admin' %}{% url 'admin_dashboard' %}{% else %}{% url 'user_dashboard' %}{% endif %}"
+               class="bg-white text-emerald-900 px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-xl inline-block">
+                Go to Dashboard
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Portal | Bharat AI{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --emerald: #2E7D32;
+            --gold: #FFD700;
+            --sky-wash: #F0F8FF;
+            --cyan-glow: rgba(0, 229, 255, 0.4);
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--sky-wash); transition: all 0.3s ease; }
+        
+        #sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 18rem; overflow: hidden; }
+        #sidebar.collapsed { width: 5rem; }
+        #sidebar.collapsed .sidebar-label, #sidebar.collapsed .sidebar-header-text { display: none; }
+        #sidebar.collapsed .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        #main-content { transition: margin-left 0.3s ease; margin-left: 18rem; }
+        #main-content.expanded { margin-left: 5rem; }
+
+        .nav-item { transition: all 0.3s ease; border-radius: 12px; display: flex; align-items: center; gap: 1rem; color: #64748b; }
+        .nav-item:hover, .nav-item.active { background: var(--emerald); color: white; box-shadow: 0 4px 15px var(--cyan-glow); }
+        .glass-header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .card-stat { background: white; border-radius: 24px; border: 1px solid rgba(46, 125, 50, 0.05); transition: transform 0.3s ease; }
+        .card-stat:hover { transform: translateY(-5px); }
+
+        .chatbot-fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, var(--emerald), #1b5e20);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 10px 30px rgba(46, 125, 50, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="flex min-h-screen">
+
+    <a href="{% url 'ai_assistant' %}" class="chatbot-fab">
+        <i class="fa-solid fa-atom fa-lg"></i>
+    </a>
+
+    <aside id="sidebar" class="bg-white border-r border-gray-100 fixed h-full flex flex-col z-50">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="bg-emerald-800 p-2 rounded-xl text-white shadow-lg cursor-pointer" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <span class="sidebar-header-text font-bold text-xl tracking-tighter text-emerald-900">BHARAT<span class="text-emerald-600">AI</span></span>
+            </div>
+
+            <nav class="space-y-2">
+
+                {% if user.is_authenticated and user.role == 'admin' %}
+                    {% include 'accounts/sidebar_admin.html' %}
+                {% else %}
+                    {% include 'accounts/sidebar_tourist.html' %}
+                {% endif %}
+
+                <div class="mt-8 pt-8 border-t border-gray-50">
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'profile_settings' %}" class="nav-item px-4 py-3 text-sm font-bold">
+                            <i class="fas fa-user-circle text-lg"></i>
+                            <span class="sidebar-label">Profile</span>
+                        </a>
+
+                        <a href="{% url 'logout' %}" class="nav-item px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-50 hover:text-red-600 mt-2">
+                            <i class="fas fa-sign-out-alt text-lg"></i>
+                            <span class="sidebar-label">Logout</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-item px-4 py-3 text-sm font-bold">
+                            <i class="fas fa-sign-in-alt text-lg"></i>
+                            <span class="sidebar-label">Login</span>
+                        </a>
+                    {% endif %}
+
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <div id="main-content" class="flex-1 flex flex-col">
+
+        <header class="glass-header sticky top-0 z-40 px-10 py-5 flex justify-between items-center">
+
+            <h2 class="text-xl font-bold text-emerald-900">{% block header_title %}Overview{% endblock %}</h2>
+
+            <div class="flex items-center gap-6">
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'notifications_list' %}" class="relative text-gray-400 hover:text-emerald-700 transition">
+                    <i class="fas fa-bell text-xl"></i>
+                    {% if unread_notifications_count > 0 %}
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
+                        {{ unread_notifications_count }}
+                    </span>
+                    {% endif %}
+                </a>
+                {% endif %}
+
+                <div class="text-right hidden md:block">
+
+                    {% if user.is_authenticated %}
+                        <p class="text-sm font-bold text-emerald-900">
+                            {{ user.full_name|default:user.email }}
+                        </p>
+                        <p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                            {{ user.role }} Mode
+                        </p>
+                    {% else %}
+                        <p class="text-sm font-bold text-gray-500">
+                            Guest User
+                        </p>
+                    {% endif %}
+
+                </div>
+
+                <div class="w-10 h-10 rounded-xl overflow-hidden border-2 border-white shadow-md">
+
+                    {% if user.is_authenticated and user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="w-full h-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </header>
+
+        <main class="p-10">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,184 @@
+{% extends 'base2.html' %}
+{% block header_title %}Destination Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #mini-map { height: 300px; width: 100%; border-radius: 20px; z-index: 1; border: 2px solid #e5e7eb; }
+    .detail-card { background: white; border: 1px solid #f1f5f9; border-radius: 24px; transition: all 0.3s ease; }
+    .detail-card:hover { border-color: #2E7D32; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-10 pb-20">
+    
+    <div class="relative h-[450px] rounded-[40px] overflow-hidden shadow-2xl">
+        {% if place.image %}
+            <img src="{{ place.image.url }}" class="w-full h-full object-cover">
+        {% else %}
+            <div class="w-full h-full bg-emerald-50 flex items-center justify-center">
+                <i class="fas fa-mountain text-emerald-200 text-8xl"></i>
+            </div>
+        {% endif %}
+        <div class="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-900/20 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-12 w-full">
+            <span class="bg-gold text-emerald-950 px-5 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] mb-6 inline-block shadow-lg">
+                {{ place.get_category_display }}
+            </span>
+            <h1 class="text-5xl font-black text-white uppercase tracking-tighter mb-4">{{ place.name }}</h1>
+            <div class="flex items-center gap-6 text-emerald-50">
+                <span class="text-sm font-bold"><i class="fas fa-calendar-alt mr-2 text-gold"></i> Best: {{ place.best_time }}</span>
+                <span class="text-sm font-bold"><i class="fas fa-map-marker-alt mr-2 text-gold"></i> Coordinates: {{ place.latitude }}, {{ place.longitude }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-10">
+        
+        <div class="lg:col-span-2 space-y-10">
+            
+            <div class="detail-card p-10">
+                <h3 class="text-2xl font-black text-emerald-900 mb-6 flex items-center">
+                    <span class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mr-4 text-emerald-700">
+                        <i class="fas fa-landmark"></i>
+                    </span>
+                    History & Significance
+                </h3>
+                <p class="text-gray-600 leading-relaxed text-lg">{{ place.description }}</p>
+            </div>
+
+            <div class="detail-card p-10">
+                <h3 class="text-2xl font-black text-emerald-900 mb-8 flex items-center">
+                    <span class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mr-4 text-emerald-700">
+                        <i class="fas fa-user-check"></i>
+                    </span>
+                    Verified Local Guides
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    {% for guide in guides %}
+                    <div class="p-6 rounded-2xl bg-emerald-50/30 border border-emerald-100/50 hover:bg-emerald-50 transition">
+                        <h4 class="font-bold text-emerald-900 text-lg mb-1">{{ guide.name }}</h4>
+                        <p class="text-[10px] text-emerald-600 font-black uppercase tracking-widest mb-4">{{ guide.languages }}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-gray-500">Service Fee</span>
+                            <span class="text-lg font-black text-emerald-800">₹{{ guide.fee }} <small class="text-[10px] font-bold">/DAY</small></span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-span-full py-8 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                        <p class="text-gray-400 font-bold text-sm">No verified guides assigned to this location yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="detail-card p-10">
+                <div class="flex justify-between items-center mb-8 border-b pb-4">
+                    <h3 class="text-2xl font-black text-emerald-900 flex items-center">
+                        <span class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mr-4 text-emerald-700">
+                            <i class="fas fa-comment-dots"></i>
+                        </span>
+                        Tourist Experiences
+                    </h3>
+                    <a href="{% url 'submit_review' place.id %}" class="btn-glow px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105">
+                        Write a Review <i class="fas fa-pen-nib ml-2"></i>
+                    </a>
+                </div>
+                <div class="space-y-6">
+                    {% for review in reviews %}
+                    <div class="p-8 rounded-3xl bg-slate-50 border border-slate-100">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-white rounded-full border border-emerald-100 flex items-center justify-center font-black text-emerald-800 text-xs">
+                                    {{ review.user.email|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <p class="text-xs font-black text-emerald-900 uppercase tracking-widest">{{ review.user.email }}</p>
+                                    <div class="flex text-gold text-[10px] mt-1">
+                                        {% for i in "12345" %}
+                                            <i class="fas fa-star {% if forloop.counter > review.rating %}opacity-20{% endif %}"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-tighter shadow-sm
+                                {% if review.sentiment == 'POSITIVE' %}bg-emerald-600 text-white
+                                {% elif review.sentiment == 'NEGATIVE' %}bg-red-500 text-white
+                                {% else %}bg-slate-400 text-white{% endif %}">
+                                AI: {{ review.sentiment }}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 italic leading-relaxed">"{{ review.comment }}"</p>
+                        <p class="text-[10px] text-gray-400 mt-6 font-bold uppercase">{{ review.created_at|date:"d M Y" }}</p>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-quote-left text-3xl text-gray-100 mb-4"></i>
+                        <p class="text-gray-400 font-bold italic">Be the first to share your experience here.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-10">
+            
+            <div class="bg-emerald-950 rounded-[32px] p-10 text-white shadow-xl">
+                <h4 class="text-xl font-black mb-8 flex items-center">
+                    <i class="fas fa-hotel mr-3 text-gold"></i> Local Homestays
+                </h4>
+                <div class="space-y-6">
+                    {% for stay in homestays %}
+                    <div class="pb-6 border-b border-emerald-800/50 last:border-0 last:pb-0">
+                        <p class="text-lg font-bold mb-1">{{ stay.name }}</p>
+                        <p class="text-xs text-emerald-400 font-bold uppercase tracking-widest">₹{{ stay.price_per_night }} <span class="text-[8px] opacity-60">/ Night</span></p>
+                        <p class="text-[10px] text-emerald-200/60 mt-2"><i class="fas fa-check-circle text-gold mr-1"></i> Verified Authentic</p>
+                    </div>
+                    {% empty %}
+                    <p class="text-emerald-300/50 text-sm italic">Stay details coming soon...</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="detail-card p-6">
+                <h5 class="font-black text-emerald-900 mb-4 uppercase text-[10px] tracking-widest">Geospatial Pin</h5>
+                <div id="mini-map" class="mb-6"></div>
+                
+                <p class="text-[10px] text-gray-400 font-black uppercase text-center mb-6">
+                    LOC: {{ place.latitude }} N, {{ place.longitude }} E
+                </p>
+                
+                <a href="https://www.google.com/maps/search/?api=1&query={{ place.latitude }},{{ place.longitude }}" 
+                   target="_blank"
+                   class="btn-glow block w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] text-center">
+                    Navigate via Google Maps <i class="fas fa-external-link-alt ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Initialize mini-map centered on the place
+    var map = L.map('mini-map', {
+        zoomControl: false,
+        attributionControl: false
+    }).setView([{{ place.latitude }}, {{ place.longitude }}], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    // Add a custom Gold Pin for the destination
+    var goldIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+    });
+
+    L.marker([{{ place.latitude }}, {{ place.longitude }}], {icon: goldIcon})
+     .addTo(map)
+     .bindPopup("<b>{{ place.name }}</b><br>Bharat AI Verified Spot")
+     .openPopup();
+</script>
+{% endblock %}
