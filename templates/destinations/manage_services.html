@@ -8,42 +8,98 @@
             <h4 class="font-bold text-emerald-900 mb-2 text-xl tracking-tighter">Register Provider</h4>
             <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-8">Manual Service Attachment</p>
             
-            <form method="POST" class="space-y-5">
+            <div class="mb-6">
+                <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Service Category</label>
+                <select id="service-switcher" class="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900 appearance-none">
+                    <option value="guide">Professional Guide</option>
+                    <option value="homestay">Verified Homestay</option>
+                </select>
+            </div>
+
+            <!-- Professional Guide Form -->
+            <form method="POST" id="form-guide" class="space-y-4">
                 {% csrf_token %}
+                <input type="hidden" name="service_type" value="guide">
                 
+                <div style="display:none;">{{ guide_form.is_verified }}</div>
+
                 <div>
-                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Service Category</label>
-                    <select name="service_type" class="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900 appearance-none">
-                        <option value="guide">Professional Guide</option>
-                        <option value="homestay">Verified Homestay</option>
-                    </select>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Guide Name <span class="text-red-500">*</span></label>
+                    {{ guide_form.name }}
+                    {% if guide_form.name.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ guide_form.name.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Provider Name</label>
-                    <input type="text" name="name" required placeholder="e.g. Arshad Khan"
-                           class="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Phone Number <span class="text-red-500">*</span></label>
+                    {{ guide_form.phone_number }}
+                    {% if guide_form.phone_number.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ guide_form.phone_number.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Contact (Phone/Email)</label>
-                    <input type="text" name="contact" required placeholder="+91 XXXXX XXXXX"
-                           class="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Languages</label>
+                    {{ guide_form.languages }}
+                    {% if guide_form.languages.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ guide_form.languages.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Attach to Location</label>
-                    <select name="destination" class="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900 appearance-none">
-                        {% for dest in destinations %}
-                            <option value="{{ dest.id }}">{{ dest.name }} ({{ dest.state }})</option>
-                        {% endfor %}
-                    </select>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Service Fee Per Day</label>
+                    {{ guide_form.fee }}
+                    {% if guide_form.fee.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ guide_form.fee.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Destination <span class="text-red-500">*</span></label>
+                    {{ guide_form.destination }}
+                    {% if guide_form.destination.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ guide_form.destination.errors.0 }}</p>{% endif %}
                 </div>
 
                 <button type="submit" class="w-full bg-emerald-900 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-emerald-800 transition shadow-lg mt-4">
-                    Confirm Attachment
+                    Confirm Guide Attachment
                 </button>
             </form>
+
+            <!-- Verified Homestay Form -->
+            <form method="POST" id="form-homestay" class="space-y-4" style="display: none;">
+                {% csrf_token %}
+                <input type="hidden" name="service_type" value="homestay">
+                
+                <div style="display:none;">{{ homestay_form.is_verified }}</div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Homestay Name <span class="text-red-500">*</span></label>
+                    {{ homestay_form.name }}
+                    {% if homestay_form.name.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ homestay_form.name.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Phone Number <span class="text-red-500">*</span></label>
+                    {{ homestay_form.phone_number }}
+                    {% if homestay_form.phone_number.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ homestay_form.phone_number.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Price Per Night</label>
+                    {{ homestay_form.price_per_night }}
+                    {% if homestay_form.price_per_night.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ homestay_form.price_per_night.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Amenities</label>
+                    {{ homestay_form.amenities }}
+                    {% if homestay_form.amenities.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ homestay_form.amenities.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Destination <span class="text-red-500">*</span></label>
+                    {{ homestay_form.destination }}
+                    {% if homestay_form.destination.errors %}<p class="text-red-500 text-[10px] font-bold mt-1">{{ homestay_form.destination.errors.0 }}</p>{% endif %}
+                </div>
+
+                <button type="submit" class="w-full bg-blue-900 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-blue-800 transition shadow-lg mt-4">
+                    Confirm Homestay Attachment
+                </button>
+            </form>
+
         </div>
     </div>
 
@@ -66,9 +122,16 @@
                         <tr class="hover:bg-emerald-50/30 transition-all">
                             <td class="py-6">
                                 <p class="text-sm font-bold text-emerald-900">{{ guide.name }}</p>
-                                <p class="text-[10px] text-gray-400 font-medium">{{ guide.phone_number|default:guide.phone }}</p>
+                                <p class="text-xs text-gray-400 font-medium mb-2">{{ guide.languages }} • ₹{{ guide.fee|floatformat:0 }}/day</p>
+
+                                <div class="font-mono text-xs font-bold text-emerald-700">Phone: {{ guide.phone_number|default:guide.phone }}</div>
+                                
+                                <div class="mt-2 flex gap-2">
+                                    <a href="tel:{{ guide.phone_number|default:guide.phone|cut:' ' }}" class="text-[9px] font-black uppercase bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full hover:bg-emerald-200"><i class="fas fa-phone-alt mr-1"></i> Call Guide</a>
+                                    <a href="https://wa.me/{{ guide.phone_number|default:guide.phone|cut:'+'|cut:' ' }}" target="_blank" class="text-[9px] font-black uppercase bg-green-50 text-green-700 px-3 py-1.5 rounded-full hover:bg-green-100"><i class="fab fa-whatsapp mr-1"></i> WhatsApp</a>
+                                </div>
                             </td>
-                            <td class="py-6 text-xs font-bold text-gray-600">{{ guide.destination.name }}</td>
+                            <td class="py-6 text-xs font-bold text-gray-600">{{ guide.destination.name }}<br><span class="text-[10px] text-gray-400">{{ guide.destination.state }}</span></td>
                             <td class="py-6">
                                 <span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[8px] font-black rounded-lg">GUIDE</span>
                             </td>
@@ -82,9 +145,16 @@
                         <tr class="hover:bg-blue-50/30 transition-all">
                             <td class="py-6">
                                 <p class="text-sm font-bold text-emerald-900">{{ home.name }}</p>
-                                <p class="text-[10px] text-gray-400 font-medium">{{ home.phone_number|default:home.contact }}</p>
+                                <p class="text-xs text-gray-400 font-medium mb-2">₹{{ home.price_per_night|floatformat:0 }}/night</p>
+
+                                <div class="font-mono text-xs font-bold text-blue-700">Phone: {{ home.phone_number|default:home.contact }}</div>
+                                
+                                <div class="mt-2 flex gap-2">
+                                    <a href="tel:{{ home.phone_number|default:home.contact|cut:' ' }}" class="text-[9px] font-black uppercase bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full hover:bg-blue-200"><i class="fas fa-phone-alt mr-1"></i> Contact Homestay</a>
+                                    <a href="https://wa.me/{{ home.phone_number|default:home.contact|cut:'+'|cut:' ' }}" target="_blank" class="text-[9px] font-black uppercase bg-green-50 text-green-700 px-3 py-1.5 rounded-full hover:bg-green-100"><i class="fab fa-whatsapp mr-1"></i> WhatsApp</a>
+                                </div>
                             </td>
-                            <td class="py-6 text-xs font-bold text-gray-600">{{ home.destination.name }}</td>
+                            <td class="py-6 text-xs font-bold text-gray-600">{{ home.destination.name }}<br><span class="text-[10px] text-gray-400">{{ home.destination.state }}</span></td>
                             <td class="py-6">
                                 <span class="px-2 py-1 bg-blue-50 text-blue-600 text-[8px] font-black rounded-lg">HOMESTAY</span>
                             </td>
@@ -99,4 +169,29 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var switcher = document.getElementById('service-switcher');
+        var formGuide = document.getElementById('form-guide');
+        var formHomestay = document.getElementById('form-homestay');
+
+        // Check if there are form errors rendered by Django to keep the correct form open
+        {% if homestay_form.errors %}
+            switcher.value = 'homestay';
+            formGuide.style.display = 'none';
+            formHomestay.style.display = 'block';
+        {% endif %}
+
+        switcher.addEventListener('change', function() {
+            if (this.value === 'guide') {
+                formGuide.style.display = 'block';
+                formHomestay.style.display = 'none';
+            } else {
+                formGuide.style.display = 'none';
+                formHomestay.style.display = 'block';
+            }
+        });
+    });
+</script>
 {% endblock %}

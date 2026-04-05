@@ -20,7 +20,7 @@ client = genai.Client(api_key=settings.AI_API_KEY)
 
 # Local App Imports
 from .models import Destination, LocalGuide, Homestay
-from .forms import DestinationForm, GuideAssignmentForm
+from .forms import DestinationForm, GuideAssignmentForm, HomestayForm
 
 User = get_user_model()
 
@@ -115,7 +115,7 @@ def add_destination(request):
         form = DestinationForm(request.POST, request.FILES)
         if form.is_valid():
             new_place = form.save()
-            messages.success(request, f"Registered {new_place.name} successfully.")
+            messages.success(request, "Destination successfully registered in the BharatAI Tourism Database.")
             return redirect('admin_dashboard')
     else:
         form = DestinationForm()
@@ -127,40 +127,34 @@ def manage_services(request):
     if request.user.role != 'admin':
         return redirect('user_dashboard')
     
-    # Handle Form Submission
+    guide_form = GuideAssignmentForm()
+    homestay_form = HomestayForm()
+
     if request.method == 'POST':
         service_type = request.POST.get('service_type')
-        name = request.POST.get('name')
-        contact = request.POST.get('contact')
-        dest_id = request.POST.get('destination')
-        destination = get_object_or_404(Destination, id=dest_id)
-
-        # Logic to save to the correct model
-        if service_type == 'guide':
-            LocalGuide.objects.create(
-                name=name, 
-                phone=contact, # Field name in your LocalGuide model
-                phone_number=contact,
-                destination=destination, 
-                is_verified=True
-            )
-        elif service_type == 'homestay':
-            Homestay.objects.create(
-                name=name, 
-                contact=contact, # Field name in your Homestay model
-                phone_number=contact,
-                destination=destination, 
-                is_verified=True
-            )
         
-        messages.success(request, f"New {service_type} attached to {destination.name} successfully!")
-        return redirect('manage_services')
+        if service_type == 'guide':
+            guide_form = GuideAssignmentForm(request.POST)
+            if guide_form.is_valid():
+                guide = guide_form.save(commit=False)
+                guide.phone = guide.phone_number or "0000000000"
+                guide.save()
+                messages.success(request, f"New Professional Guide attached to {guide.destination.name} successfully!")
+                return redirect('manage_services')
+        elif service_type == 'homestay':
+            homestay_form = HomestayForm(request.POST)
+            if homestay_form.is_valid():
+                homestay = homestay_form.save(commit=False)
+                homestay.contact = homestay.phone_number or "Not Provided"
+                homestay.save()
+                messages.success(request, f"New Verified Homestay attached to {homestay.destination.name} successfully!")
+                return redirect('manage_services')
 
-    # Fetch data for display
     context = {
-        'guides': LocalGuide.objects.all().select_related('destination'),
-        'homestays': Homestay.objects.all().select_related('destination'),
-        'destinations': Destination.objects.all().order_by('name'),
+        'guides': LocalGuide.objects.all().select_related('destination').order_by('-id'),
+        'homestays': Homestay.objects.all().select_related('destination').order_by('-id'),
+        'guide_form': guide_form,
+        'homestay_form': homestay_form,
     }
     return render(request, 'destinations/manage_services.html', context)
 

@@ -1,8 +1,21 @@
 {% extends 'base2.html' %}
 {% block header_title %}Register New Destination{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #map-picker {
+        height: 350px;
+        width: 100%;
+        border-radius: 20px;
+        z-index: 1;
+        border: 2px solid #e5e7eb;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto pb-20">
     <div class="mb-8 flex items-center justify-between px-4">
         <div>
             <h3 class="text-2xl font-bold text-emerald-900">Governance Portal</h3>
@@ -14,69 +27,176 @@
     </div>
 
     <div class="card-stat p-10 bg-white shadow-2xl border border-emerald-50">
-        <form method="POST" enctype="multipart/form-data" class="space-y-8">
+        <form method="POST" enctype="multipart/form-data" class="space-y-10" id="registerForm">
             {% csrf_token %}
             
-            {% if form.errors %}
-                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl mb-6">
-                    <p class="text-sm text-red-700 font-bold">Please correct the following errors:</p>
-                    <ul class="text-xs text-red-600 mt-2 list-disc list-inside">
-                        {% for field, errors in form.errors.items %}
-                            <li>{{ field|title }}: {{ errors|striptags }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Destination Name</label>
-                    {{ form.name }}
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Category</label>
-                    {{ form.category }}
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Historical/Eco Description</label>
-                {{ form.description }}
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Cultural Significance</label>
-                {{ form.history }}
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Latitude</label>
-                    {{ form.latitude }}
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Longitude</label>
-                    {{ form.longitude }}
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Best Time</label>
-                    {{ form.best_time }}
+            <!-- Section: Basic Information -->
+            <div>
+                <h4 class="text-lg font-black text-emerald-900 border-b pb-2 mb-6">Section: Basic Information</h4>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Destination Name <span class="text-red-500">*</span></label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-1">{{ form.name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">State <span class="text-red-500">*</span></label>
+                        {{ form.state }}
+                        {% if form.state.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-1">{{ form.state.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-2 col-span-full">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Category <span class="text-red-500">*</span></label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-1">{{ form.category.errors.0 }}</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <div class="p-8 bg-emerald-50/50 rounded-[32px] border border-dashed border-emerald-200 text-center">
-                <i class="fas fa-cloud-upload-alt text-3xl text-emerald-700 mb-4"></i>
-                <label class="text-sm font-bold text-emerald-900 block mb-2">Upload Display Image</label>
-                <p class="text-[10px] text-gray-400 uppercase font-bold mb-4">Recommended Size: 1920x1080px</p>
-                <div class="flex justify-center">
-                    {{ form.image }}
+            <!-- Section: Description -->
+            <div>
+                <h4 class="text-lg font-black text-emerald-900 border-b pb-2 mb-6">Section: Description</h4>
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Description <span class="text-red-500">*</span></label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-1">{{ form.description.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">History / Cultural Significance</label>
+                        {{ form.history }}
+                        {% if form.history.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-1">{{ form.history.errors.0 }}</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <button type="submit" class="btn-glow w-full py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:scale-[1.01] transition-all">
+            <!-- Section: Tourism Information -->
+            <div>
+                <h4 class="text-lg font-black text-emerald-900 border-b pb-2 mb-6">Section: Tourism Information</h4>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Best Time to Visit</label>
+                        {{ form.best_time }}
+                        {% if form.best_time.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-1">{{ form.best_time.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Visiting Time</label>
+                        {{ form.visiting_time }}
+                        {% if form.visiting_time.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-1">{{ form.visiting_time.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Location -->
+            <div>
+                <h4 class="text-lg font-black text-emerald-900 border-b pb-2 mb-6">Section: Location</h4>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="space-y-2 bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                        <label class="text-[10px] font-black uppercase text-emerald-700 tracking-widest ml-1">Latitude</label>
+                        {{ form.latitude }}
+                        {% if form.latitude.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-1">{{ form.latitude.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-2 bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                        <label class="text-[10px] font-black uppercase text-emerald-700 tracking-widest ml-1">Longitude</label>
+                        {{ form.longitude }}
+                        {% if form.longitude.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-1">{{ form.longitude.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <p class="text-xs text-gray-400 font-bold mb-2 uppercase tracking-widest"><i class="fas fa-hand-pointer mr-2"></i>Click Map to Auto-Fill Coordinates</p>
+                <div id="map-picker"></div>
+            </div>
+
+            <!-- Section: Media -->
+            <div>
+                <h4 class="text-lg font-black text-emerald-900 border-b pb-2 mb-6">Section: Media</h4>
+                <div class="p-8 bg-emerald-50/50 rounded-[32px] border border-dashed border-emerald-200 text-center">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-emerald-700 mb-4"></i>
+                    <label class="text-sm font-bold text-emerald-900 block mb-2">Destination Image Upload</label>
+                    <p class="text-[10px] text-gray-400 uppercase font-bold mb-4">Accept: JPG, PNG, JPEG</p>
+                    <div class="flex justify-center">
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                            <p class="text-xs text-red-500 font-bold mt-2">{{ form.image.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-glow w-full py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:scale-[1.01] transition-all mt-8">
                 Finalize Database Registration
             </button>
         </form>
     </div>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var latInput = document.getElementById('id_latitude');
+        var lngInput = document.getElementById('id_longitude');
+
+        var initialLat = latInput.value ? parseFloat(latInput.value) : 23.3441;
+        var initialLng = lngInput.value ? parseFloat(lngInput.value) : 85.3096;
+
+        var map = L.map('map-picker').setView([initialLat, initialLng], 6);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        var marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
+
+        function updateInputs(lat, lng) {
+            latInput.value = lat.toFixed(5);
+            lngInput.value = lng.toFixed(5);
+        }
+
+        // Auto-fill on map click
+        map.on('click', function(e) {
+            marker.setLatLng(e.latlng);
+            updateInputs(e.latlng.lat, e.latlng.lng);
+        });
+
+        // Also update when marker is dragged
+        marker.on('dragend', function(e) {
+            var position = marker.getLatLng();
+            updateInputs(position.lat, position.lng);
+        });
+
+        // Update marker if admin types in the boxes manually
+        latInput.addEventListener('change', function() {
+            var newLat = parseFloat(this.value);
+            var newLng = parseFloat(lngInput.value);
+            if (!isNaN(newLat) && !isNaN(newLng)) {
+                marker.setLatLng([newLat, newLng]);
+                map.panTo([newLat, newLng]);
+            }
+        });
+
+        lngInput.addEventListener('change', function() {
+            var newLat = parseFloat(latInput.value);
+            var newLng = parseFloat(this.value);
+            if (!isNaN(newLat) && !isNaN(newLng)) {
+                marker.setLatLng([newLat, newLng]);
+                map.panTo([newLat, newLng]);
+            }
+        });
+    });
+</script>
 {% endblock %}
