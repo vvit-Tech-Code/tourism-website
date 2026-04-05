@@ -61,6 +61,7 @@ class LocalGuide(models.Model):
     name = models.CharField(max_length=100)
     # Added a default value so migrations never get stuck
     phone = models.CharField(max_length=20, default="0000000000") 
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
     languages = models.CharField(max_length=200, default="Hindi, English")
     fee = models.DecimalField(max_digits=10, decimal_places=2, default=500.00)
     is_verified = models.BooleanField(default=True)
@@ -73,6 +74,7 @@ class Homestay(models.Model):
     name = models.CharField(max_length=200)
     # Added a default value here as well
     contact = models.CharField(max_length=20, default="Not Provided") 
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2, default=1000.00)
     amenities = models.TextField(default="WiFi, Local Food, Parking")
     is_verified = models.BooleanField(default=True)

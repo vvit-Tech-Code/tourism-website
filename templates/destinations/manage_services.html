@@ -66,7 +66,7 @@
                         <tr class="hover:bg-emerald-50/30 transition-all">
                             <td class="py-6">
                                 <p class="text-sm font-bold text-emerald-900">{{ guide.name }}</p>
-                                <p class="text-[10px] text-gray-400 font-medium">{{ guide.phone }}</p>
+                                <p class="text-[10px] text-gray-400 font-medium">{{ guide.phone_number|default:guide.phone }}</p>
                             </td>
                             <td class="py-6 text-xs font-bold text-gray-600">{{ guide.destination.name }}</td>
                             <td class="py-6">
@@ -82,7 +82,7 @@
                         <tr class="hover:bg-blue-50/30 transition-all">
                             <td class="py-6">
                                 <p class="text-sm font-bold text-emerald-900">{{ home.name }}</p>
-                                <p class="text-[10px] text-gray-400 font-medium">{{ home.contact }}</p>
+                                <p class="text-[10px] text-gray-400 font-medium">{{ home.phone_number|default:home.contact }}</p>
                             </td>
                             <td class="py-6 text-xs font-bold text-gray-600">{{ home.destination.name }}</td>
                             <td class="py-6">

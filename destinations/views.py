@@ -140,6 +140,7 @@ def manage_services(request):
             LocalGuide.objects.create(
                 name=name, 
                 phone=contact, # Field name in your LocalGuide model
+                phone_number=contact,
                 destination=destination, 
                 is_verified=True
             )
@@ -147,6 +148,7 @@ def manage_services(request):
             Homestay.objects.create(
                 name=name, 
                 contact=contact, # Field name in your Homestay model
+                phone_number=contact,
                 destination=destination, 
                 is_verified=True
             )
